@@ -1,0 +1,106 @@
+"""Faux broker pour les tests de scénarios et le backtest.
+
+Implémente l'interface `src.spread_agent.Broker` avec un état 100 % scriptable et une
+chaîne d'options synthétique cohérente (Black-Scholes via `src.pricing`).
+"""
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+
+from src.pricing import (
+    VerticalSpread,
+    apply_slippage,
+    price_vertical_credit,
+    strike_for_delta,
+)
+from src.spread_agent import (
+    AccountSnapshot,
+    Broker,
+    SpreadKind,
+    SpreadPosition,
+    SpreadQuote,
+)
+
+
+@dataclass
+class FakeBroker(Broker):
+    equity: float = 100_000.0
+    cash: float = 100_000.0
+    buying_power: float = 200_000.0
+    start_of_day_equity: float = 100_000.0
+    high_water_mark: float = 100_000.0
+
+    positions: list[SpreadPosition] = field(default_factory=list)
+
+    # marché synthétique
+    spot: dict[str, float] = field(default_factory=dict)   # symbole -> cours
+    vol: float = 0.25                                       # vol implicite supposée
+    liquidity_spread_pct: float = 0.03                      # largeur bid-ask relative
+    chain_available: bool = True                            # False -> quote_credit_spread renvoie None
+
+    # -- interface Broker ------------------------------------------
+    def account(self) -> AccountSnapshot:
+        return AccountSnapshot(
+            equity=self.equity,
+            cash=self.cash,
+            buying_power=self.buying_power,
+            start_of_day_equity=self.start_of_day_equity,
+            high_water_mark=self.high_water_mark,
+        )
+
+    def open_spreads(self) -> list[SpreadPosition]:
+        return list(self.positions)
+
+    def quote_credit_spread(
+        self, symbol: str, kind: SpreadKind, target_delta: float, width: float, dte: int
+    ) -> SpreadQuote | None:
+        if not self.chain_available or symbol not in self.spot:
+            return None
+
+        spot = self.spot[symbol]
+        t = dte / 365.0
+
+        if kind == "bull_put":
+            short = strike_for_delta(spot, target_delta, t, self.vol, "put")
+            spread = VerticalSpread("put", short_strike=short, long_strike=short - width)
+        elif kind == "bear_call":
+            short = strike_for_delta(spot, target_delta, t, self.vol, "call")
+            spread = VerticalSpread("call", short_strike=short, long_strike=short + width)
+        else:  # iron_condor -> on cote la jambe put pour dimensionner (approché)
+            short = strike_for_delta(spot, target_delta, t, self.vol, "put")
+            spread = VerticalSpread("put", short_strike=short, long_strike=short - width)
+
+        mid = price_vertical_credit(spread, spot=spot, t=t, vol=self.vol)
+        credit = apply_slippage(mid, self.liquidity_spread_pct)
+        return SpreadQuote(
+            symbol=symbol,
+            kind=kind,
+            short_strike=spread.short_strike,
+            long_strike=spread.long_strike,
+            credit=credit,
+            max_loss=spread.max_loss(credit),
+            collateral=spread.width * 100.0,
+            dte=dte,
+            spread_pct=self.liquidity_spread_pct,
+        )
+
+    # -- helpers de scénario -------------------------------------
+    def add_position(
+        self,
+        symbol: str,
+        kind: SpreadKind = "bull_put",
+        entry_credit: float = 1.0,
+        current_value: float = 1.0,
+        dte: int = 5,
+        contracts: int = 1,
+    ) -> None:
+        self.positions.append(
+            SpreadPosition(
+                symbol=symbol,
+                kind=kind,
+                entry_credit=entry_credit,
+                current_value=current_value,
+                dte=dte,
+                contracts=contracts,
+            )
+        )

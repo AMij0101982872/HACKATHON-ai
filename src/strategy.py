@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import Literal, Sequence
 
 Signal = Literal["buy", "sell", "hold"]
+Regime = Literal["bullish", "bearish", "neutral"]
 
 
 def moving_average(values: Sequence[float], window: int) -> float | None:
@@ -39,3 +40,34 @@ def sma_crossover_signal(closes: Sequence[float], fast: int, slow: int) -> Signa
     if crossed_down:
         return "sell"
     return "hold"
+
+
+def sma_gap(closes: Sequence[float], fast: int, slow: int) -> float | None:
+    """Écart relatif (MM courte - MM longue) / |MM longue|. None si données insuffisantes."""
+    fast_ma = moving_average(closes, fast)
+    slow_ma = moving_average(closes, slow)
+    if fast_ma is None or slow_ma is None or slow_ma == 0:
+        return None
+    return (fast_ma - slow_ma) / abs(slow_ma)
+
+
+def sma_regime(
+    closes: Sequence[float], fast: int, slow: int, threshold_pct: float = 0.005
+) -> Regime:
+    """Régime de marché d'après l'écart persistant entre MM courte et MM longue.
+
+    - "bullish" : MM courte au-dessus de la MM longue de plus de `threshold_pct`
+    - "bearish" : MM courte en-dessous de plus de `threshold_pct`
+    - "neutral" : écart plus faible que le seuil, ou données insuffisantes
+
+    Contrairement à `sma_crossover_signal` (qui ne parle que le jour du croisement),
+    `sma_regime` renvoie un état exploitable *tous les jours*.
+    """
+    gap = sma_gap(closes, fast, slow)
+    if gap is None:
+        return "neutral"
+    if gap > threshold_pct:
+        return "bullish"
+    if gap < -threshold_pct:
+        return "bearish"
+    return "neutral"

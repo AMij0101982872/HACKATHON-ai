@@ -4,3 +4,8 @@ __pycache__/
 *.pyc
 .pytest_cache/
 .ipynb_checkpoints/
+
+# cache de bougies du backtest (dossier data/ à la racine uniquement)
+/data/
+# état runtime de l'agent (pas versionné ; live.json / history.json le sont)
+web/data/agent_state.json

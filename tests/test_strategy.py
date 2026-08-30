@@ -1,4 +1,4 @@
-from src.strategy import moving_average, sma_crossover_signal
+from src.strategy import moving_average, sma_crossover_signal, sma_gap, sma_regime
 
 
 def test_moving_average_basic():
@@ -24,3 +24,22 @@ def test_bearish_crossover():
 def test_hold_when_no_cross():
     closes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
     assert sma_crossover_signal(closes, fast=3, slow=5) == "hold"
+
+
+def test_regime_bullish_bearish_neutral():
+    up = list(range(1, 21))            # tendance nette : MM courte > MM longue
+    down = list(range(20, 0, -1))
+    flat = [10.0] * 20
+    assert sma_regime(up, fast=3, slow=5) == "bullish"
+    assert sma_regime(down, fast=3, slow=5) == "bearish"
+    assert sma_regime(flat, fast=3, slow=5) == "neutral"
+
+
+def test_regime_neutral_when_insufficient_data():
+    assert sma_regime([1, 2, 3], fast=3, slow=5) == "neutral"
+
+
+def test_sma_gap_sign_matches_regime():
+    up = list(range(1, 21))
+    assert sma_gap(up, fast=3, slow=5) > 0
+    assert sma_gap([1, 2], fast=3, slow=5) is None
