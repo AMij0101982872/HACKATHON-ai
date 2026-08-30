@@ -1,7 +1,7 @@
 """Runner autonome de l'agent — une passe : données -> régime -> décision -> ordres.
 
 Lancé par cron (voir README). `DRY_RUN=true` dans .env -> aucun ordre envoyé, tout est
-journalisé dans web/data/live.json (source du dashboard).
+journalisé dans web/public/data/live.json (source du dashboard).
 
     python -m src.run              # une passe
     python -m src.run --loop 900   # boucle toutes les 900 s (usage local seulement)
@@ -30,7 +30,7 @@ from src.risk_guard import risk_params
 from src.spread_agent import SpreadAgent, SpreadConfig, SymbolView
 from src.strategy import sma_regime
 
-LIVE_JSON = Path("web/data/live.json")
+LIVE_JSON = Path("web/public/data/live.json")
 MAX_LOG = 2000
 
 
@@ -105,7 +105,21 @@ def run_once() -> dict:
         "equity": round(acct.equity, 2),
         "cash": round(acct.cash, 2),
         "buying_power": round(acct.buying_power, 2),
+        "start_of_day_equity": round(acct.start_of_day_equity, 2),
+        "high_water_mark": round(acct.high_water_mark, 2),
         "open_positions": len(positions),
+        "positions": [
+            {
+                "symbol": p.symbol,
+                "kind": p.kind,
+                "entry_credit": round(p.entry_credit, 2),
+                "current_value": round(p.current_value, 2),
+                "unrealized_pl": round(p.unrealized_pl, 2),
+                "dte": p.dte,
+                "contracts": p.contracts,
+            }
+            for p in positions.values()
+        ],
         "regimes": {v.symbol: v.regime for v in views},
     }
     _append_live(snapshot, events)

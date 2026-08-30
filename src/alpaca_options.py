@@ -42,7 +42,7 @@ from src.spread_agent import (
     SpreadQuote,
 )
 
-STATE_FILE = Path("web/data/agent_state.json")
+STATE_FILE = Path("web/public/data/agent_state.json")
 _OPT_TYPE: dict[SpreadKind, str] = {"bull_put": "put", "bear_call": "call", "iron_condor": "put"}
 
 

@@ -1,68 +1,90 @@
-# hackathon-AI — Agent de trading Alpaca
+# Agent Alpaca — spreads d'options à crédit pilotés par le régime de marché
 
-Agent de trading sur compte **paper** Alpaca. Deux façons de l'utiliser :
+Agent de trading **autonome** sur compte **paper** Alpaca, pour le *Alpaca AI Trading
+Agents Hackathon* (lablab.ai × Alpaca). Toutes les positions sont des **options**
+(spreads verticaux à crédit), à **risque défini et borné**.
 
-1. **Via Claude Code + MCP** — tu discutes en langage naturel, Claude appelle les outils
-   du serveur MCP `alpaca` (déjà configuré en scope user). Voir [CLAUDE.md](CLAUDE.md).
-2. **En autonome** — le script Python `src/agent.py` tourne seul : il récupère les cours,
-   calcule un signal (croisement de moyennes mobiles) et passe les ordres.
+## Principe
 
-## Prérequis
+Deux agents :
 
-- Python 3.10+
-- `uv` (déjà installé)
-- Des clés API **paper** Alpaca → https://alpaca.markets → Paper Trading → *View API Keys*
+1. **Moteur déterministe** (`src/`) — pour chaque sous-jacent, calcule le *régime* de
+   marché (écart MM10/MM30) et en déduit une structure d'options :
+   | Régime | Structure |
+   |--------|-----------|
+   | haussier | bull put spread |
+   | baissier | bear call spread |
+   | neutre | iron condor (côté put) |
+   Gestion : prise de profit à 50 % du crédit, stop à 2× le crédit, clôture à
+   l'approche de l'échéance. Tout ordre passe par un **garde-fou déterministe**
+   (`src/risk_guard.py`) : kill-switch perte du jour / drawdown, plafond de
+   positions, perte max par structure, exposition par sous-jacent, buffer de cash,
+   fenêtre d'échéance, liquidité.
+2. **Agent analyste** (à brancher) — Claude classe l'univers et lit le sentiment
+   (`get_news`) pour autoriser ou écarter chaque sous-jacent.
+
+## Arborescence
+
+```
+src/
+  strategy.py        signal MM + sma_regime (pur, testé)
+  risk_guard.py      garde-fou déterministe + profils de risque
+  pricing.py         Black-Scholes (prix, delta), strike par delta, vol réalisée
+  spread_agent.py    SpreadAgent.decide() — régime -> décisions (broker injecté)
+  alpaca_options.py  broker options réel (ordres mleg, mode dry-run)
+  run.py             runner CLI une passe -> web/public/data/live.json
+backtest/
+  data.py            historique de bougies (cache CSV)
+  engine.py          rejeu jour/jour : strategy + risk_guard + spread_agent
+tests/               62 tests (pytest)
+web/                 dashboard Vite + React (déployé sur Netlify)
+.github/workflows/   agent.yml — cron GitHub Actions
+```
 
 ## Installation
 
 ```powershell
-cd C:\Users\hp\hackathon-AI
 uv venv
-.venv\Scripts\activate
 uv pip install -r requirements.txt
-copy .env.example .env   # puis mets tes clés dans .env
+copy .env.example .env    # puis renseigner ALPACA_API_KEY / ALPACA_SECRET_KEY
 ```
 
-## Lancer l'agent
+## Utilisation
 
 ```powershell
-# Simulation (aucun ordre envoyé) — valeur par défaut
-python -m src.agent
-
-# Passer les ordres pour de vrai (compte paper)
-#   -> mets DRY_RUN=false dans .env
+pytest                                   # 62 tests
+python -m backtest.engine                # backtest -> web/public/data/history.json
+python -m src.run                        # une passe de l'agent (DRY_RUN respecté)
+python -m src.run --loop 1200            # boucle locale (prod = cron)
 ```
 
-## Config
+`DRY_RUN=true` (défaut) : cotations et décisions réelles, **aucun ordre envoyé**.
+Passer à `DRY_RUN=false` dans `.env` (ou variable Actions `DRY_RUN`) pour les ordres
+réels sur le compte paper.
 
-Tout se règle dans [config.py](config.py) et `.env` :
+## Déploiement
 
-| Variable        | Rôle                                              |
-|-----------------|--------------------------------------------------|
-| `WATCHLIST`     | Symboles suivis (ex. `AAPL,MSFT,NVDA`)            |
-| `FAST_MA`       | Fenêtre moyenne mobile courte (jours)            |
-| `SLOW_MA`       | Fenêtre moyenne mobile longue (jours)            |
-| `ORDER_NOTIONAL`| Montant en $ par ordre d'achat                   |
-| `DRY_RUN`       | `true` = simulation, `false` = ordres réels      |
+- **Agent** : GitHub Actions (`.github/workflows/agent.yml`) exécute `src.run` toutes
+  les 20 min en heures de marché et publie `web/public/data/live.json`.
+  Secrets requis : `ALPACA_API_KEY`, `ALPACA_SECRET_KEY`. Variable : `DRY_RUN`.
+- **Dashboard** : Netlify, importer le repo (réglages dans `netlify.toml`). Le site
+  lit `live.json` (réel) et `history.json` (backtest de référence).
 
-## Tests
+## Paramètres (`config.py` / `.env`)
 
-```powershell
-uv pip install pytest
-pytest
-```
+| Variable | Rôle | Défaut |
+|----------|------|--------|
+| `OPTION_UNIVERSE` | sous-jacents suivis | SPY,QQQ,AAPL,MSFT,NVDA,AMD |
+| `TARGET_DELTA` | delta de la jambe courte | 0.30 |
+| `SPREAD_WIDTH` | écart entre strikes ($) | 5 |
+| `DTE_TARGET` | jours à l'échéance à l'ouverture | 7 |
+| `REGIME_THRESHOLD` | seuil de sortie du régime neutre | 0.03 |
+| `RISK_PROFILE` | conservative \| balanced \| aggressive | aggressive |
+| `DRY_RUN` | simulation si vrai | true |
 
-## Structure
+## Avertissements
 
-```
-hackathon-AI/
-├── CLAUDE.md              # mode d'emploi pour Claude Code (agent via MCP)
-├── config.py             # paramètres + chargement .env
-├── requirements.txt
-├── src/
-│   ├── alpaca_client.py  # wrapper alpaca-py (compte, cours, ordres)
-│   ├── strategy.py       # logique de signal (pure, testable)
-│   └── agent.py          # boucle : données -> signal -> risk -> ordre
-└── tests/
-    └── test_strategy.py
-```
+Compte **paper** uniquement, capital virtuel, données de marché réelles. Le backtest
+d'options modélise les primes en Black-Scholes (vol réalisée) faute de données
+d'options historiques : à lire comme un **profil de comportement**, pas une garantie
+de P&L.

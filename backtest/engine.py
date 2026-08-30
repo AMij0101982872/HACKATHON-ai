@@ -40,7 +40,7 @@ from src.strategy import sma_regime
 
 Series = list[tuple[date, float]]
 TRADING_DAYS = 252
-OUT_JSON = Path("web/data/history.json")
+OUT_JSON = Path("web/public/data/history.json")
 
 
 @dataclass
@@ -380,10 +380,15 @@ def main() -> None:
     )
     _print_report(result)
 
+    # allège le JSON destiné au dashboard : on ne garde que les décisions récentes
+    on_disk = dict(result)
+    on_disk["decisions"] = result["decisions"][-400:]
+    on_disk["decisions_total"] = len(result["decisions"])
+
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(result, indent=2), encoding="utf-8")
-    print(f"\nJSON écrit : {out}")
+    out.write_text(json.dumps(on_disk, indent=2), encoding="utf-8")
+    print(f"\nJSON écrit : {out}  ({out.stat().st_size // 1024} Ko)")
 
 
 if __name__ == "__main__":

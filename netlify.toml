@@ -1,0 +1,12 @@
+# Déploiement du dashboard (dossier web/) sur Netlify.
+# Dans Netlify : "Add new site" > importer le repo GitHub, laisser ces réglages.
+
+[build]
+  base = "web"
+  command = "npm install && npm run build"
+  publish = "web/dist"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

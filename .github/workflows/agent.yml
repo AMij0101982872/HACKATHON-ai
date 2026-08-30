@@ -1,0 +1,53 @@
+name: agent
+
+# Fait tourner l'agent en autonomie et publie le journal (web/public/data/live.json),
+# ce qui déclenche le redéploiement Netlify du dashboard.
+#
+# Secrets requis (Settings > Secrets and variables > Actions) :
+#   ALPACA_API_KEY, ALPACA_SECRET_KEY   -> clés du compte paper
+# Variable optionnelle :
+#   DRY_RUN = "false" pour passer aux ordres réels (défaut : "true")
+
+on:
+  schedule:
+    # toutes les 20 min pendant les heures de marché US (≈13:30–21:00 UTC, lun–ven)
+    - cron: "*/20 13-21 * * 1-5"
+  workflow_dispatch: {}
+
+concurrency:
+  group: agent-run
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Run agent (one pass)
+        env:
+          ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          DRY_RUN: ${{ vars.DRY_RUN || 'true' }}
+        run: python -m src.run
+
+      - name: Commit journal
+        run: |
+          git config user.name  "alpaca-agent-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add web/public/data/live.json web/public/data/agent_state.json
+          if git diff --staged --quiet; then
+            echo "rien à publier"
+          else
+            git commit -m "chore(agent): passe $(date -u +%FT%TZ) [skip ci]"
+            git push
+          fi
