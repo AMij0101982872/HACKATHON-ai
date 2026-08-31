@@ -53,6 +53,12 @@
       "equity": 100000.0,
       "cash": 100000.0,
       "positions": 0
+    },
+    {
+      "ts": "2026-08-31T13:35:15.150499+00:00",
+      "equity": 100000.0,
+      "cash": 100000.0,
+      "positions": 0
     }
   ],
   "decisions": [
@@ -1859,12 +1865,192 @@
       "symbol": "AMD",
       "action": "hold",
       "reason": "poche : r\u00e9gime neutre"
+    },
+    {
+      "ts": "2026-08-31T13:35:15.149631+00:00",
+      "symbol": "SPY",
+      "action": "open",
+      "reason": "ouverture iron_condor SPY (cr\u00e9dit 0.94/action)",
+      "order": {
+        "ts": "2026-08-31T13:35:15.149673+00:00",
+        "tag": "open iron_condor SPY",
+        "reason": "ouverture iron_condor SPY (cr\u00e9dit 0.94/action)",
+        "legs": [
+          {
+            "symbol": "SPY260908P00760000",
+            "side": "sell",
+            "intent": "sell_to_open"
+          },
+          {
+            "symbol": "SPY260908P00755000",
+            "side": "buy",
+            "intent": "buy_to_open"
+          }
+        ],
+        "limit_price": 0.94,
+        "dry_run": true,
+        "quote": {
+          "symbol": "SPY",
+          "kind": "iron_condor",
+          "short_strike": 760.0,
+          "long_strike": 755.0,
+          "credit": 0.94,
+          "max_loss": 405.93,
+          "collateral": 500.0,
+          "dte": 8,
+          "spread_pct": 0.02,
+          "contracts": 1,
+          "short_symbol": "SPY260908P00760000",
+          "long_symbol": "SPY260908P00755000",
+          "expiry": "2026-09-08",
+          "strategy": "credit"
+        },
+        "status": "SIMULATED"
+      }
+    },
+    {
+      "ts": "2026-08-31T13:35:15.149905+00:00",
+      "symbol": "QQQ",
+      "action": "open",
+      "reason": "ouverture iron_condor QQQ (cr\u00e9dit 1.04/action)",
+      "order": {
+        "ts": "2026-08-31T13:35:15.149928+00:00",
+        "tag": "open iron_condor QQQ",
+        "reason": "ouverture iron_condor QQQ (cr\u00e9dit 1.04/action)",
+        "legs": [
+          {
+            "symbol": "QQQ260908P00706000",
+            "side": "sell",
+            "intent": "sell_to_open"
+          },
+          {
+            "symbol": "QQQ260908P00701000",
+            "side": "buy",
+            "intent": "buy_to_open"
+          }
+        ],
+        "limit_price": 1.04,
+        "dry_run": true,
+        "quote": {
+          "symbol": "QQQ",
+          "kind": "iron_condor",
+          "short_strike": 706.0,
+          "long_strike": 701.0,
+          "credit": 1.04,
+          "max_loss": 396.08,
+          "collateral": 500.0,
+          "dte": 8,
+          "spread_pct": 0.003,
+          "contracts": 1,
+          "short_symbol": "QQQ260908P00706000",
+          "long_symbol": "QQQ260908P00701000",
+          "expiry": "2026-09-08",
+          "strategy": "credit"
+        },
+        "status": "SIMULATED"
+      }
+    },
+    {
+      "ts": "2026-08-31T13:35:15.150213+00:00",
+      "symbol": "AAPL",
+      "action": "hold",
+      "reason": "risk_guard : illiquide : spread bid-ask 43.5% > 15%"
+    },
+    {
+      "ts": "2026-08-31T13:35:15.150222+00:00",
+      "symbol": "MSFT",
+      "action": "hold",
+      "reason": "risk_guard : illiquide : spread bid-ask 54.9% > 15%"
+    },
+    {
+      "ts": "2026-08-31T13:35:15.150228+00:00",
+      "symbol": "NVDA",
+      "action": "open",
+      "reason": "ouverture iron_condor NVDA (cr\u00e9dit 0.91/action)",
+      "order": {
+        "ts": "2026-08-31T13:35:15.150251+00:00",
+        "tag": "open iron_condor NVDA",
+        "reason": "ouverture iron_condor NVDA (cr\u00e9dit 0.91/action)",
+        "legs": [
+          {
+            "symbol": "NVDA260909P00210000",
+            "side": "sell",
+            "intent": "sell_to_open"
+          },
+          {
+            "symbol": "NVDA260909P00205000",
+            "side": "buy",
+            "intent": "buy_to_open"
+          }
+        ],
+        "limit_price": 0.91,
+        "dry_run": true,
+        "quote": {
+          "symbol": "NVDA",
+          "kind": "iron_condor",
+          "short_strike": 210.0,
+          "long_strike": 205.0,
+          "credit": 0.91,
+          "max_loss": 409.38,
+          "collateral": 500.0,
+          "dte": 9,
+          "spread_pct": 0.0168,
+          "contracts": 1,
+          "short_symbol": "NVDA260909P00210000",
+          "long_symbol": "NVDA260909P00205000",
+          "expiry": "2026-09-09",
+          "strategy": "credit"
+        },
+        "status": "SIMULATED"
+      }
+    },
+    {
+      "ts": "2026-08-31T13:35:15.150467+00:00",
+      "symbol": "AMD",
+      "action": "hold",
+      "reason": "risk_guard : illiquide : spread bid-ask 63.5% > 15%"
+    },
+    {
+      "ts": "2026-08-31T13:35:15.150475+00:00",
+      "symbol": "SPY",
+      "action": "hold",
+      "reason": "poche : r\u00e9gime neutre"
+    },
+    {
+      "ts": "2026-08-31T13:35:15.150478+00:00",
+      "symbol": "QQQ",
+      "action": "hold",
+      "reason": "poche : r\u00e9gime neutre"
+    },
+    {
+      "ts": "2026-08-31T13:35:15.150481+00:00",
+      "symbol": "AAPL",
+      "action": "hold",
+      "reason": "poche : r\u00e9gime neutre"
+    },
+    {
+      "ts": "2026-08-31T13:35:15.150486+00:00",
+      "symbol": "MSFT",
+      "action": "hold",
+      "reason": "poche : r\u00e9gime pas assez marqu\u00e9 (|\u00e9cart| 5.6% < 6%)"
+    },
+    {
+      "ts": "2026-08-31T13:35:15.150491+00:00",
+      "symbol": "NVDA",
+      "action": "hold",
+      "reason": "poche : r\u00e9gime neutre"
+    },
+    {
+      "ts": "2026-08-31T13:35:15.150495+00:00",
+      "symbol": "AMD",
+      "action": "hold",
+      "reason": "poche : r\u00e9gime pas assez marqu\u00e9 (|\u00e9cart| 3.0% < 6%)"
     }
   ],
-  "generated_at": "2026-08-31T04:41:20.060856+00:00",
+  "generated_at": "2026-08-31T13:35:15.150499+00:00",
   "dry_run": true,
   "latest": {
-    "ts": "2026-08-31T04:41:20.060856+00:00",
+    "ts": "2026-08-31T13:35:15.150499+00:00",
     "dry_run": true,
     "equity": 100000.0,
     "cash": 100000.0,
@@ -1879,7 +2065,7 @@
       "AAPL": "neutral",
       "MSFT": "bullish",
       "NVDA": "neutral",
-      "AMD": "neutral"
+      "AMD": "bearish"
     },
     "analyst": {
       "SPY": {
