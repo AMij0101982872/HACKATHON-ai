@@ -107,6 +107,12 @@
       "equity": 98011.15,
       "cash": 101526.15,
       "positions": 5
+    },
+    {
+      "ts": "2026-08-31T23:13:18.067502+00:00",
+      "equity": 98011.15,
+      "cash": 101526.15,
+      "positions": 5
     }
   ],
   "decisions": [
@@ -3390,13 +3396,253 @@
         },
         "status": "SIMULATED"
       }
+    },
+    {
+      "ts": "2026-08-31T23:13:17.738147+00:00",
+      "symbol": "SPY",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L +9$, DTE 8)"
+    },
+    {
+      "ts": "2026-08-31T23:13:17.738166+00:00",
+      "symbol": "QQQ",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L +13$, DTE 8)"
+    },
+    {
+      "ts": "2026-08-31T23:13:17.738171+00:00",
+      "symbol": "IWM",
+      "action": "open",
+      "reason": "ouverture iron_condor IWM (cr\u00e9dit 1.76/action)",
+      "order": {
+        "ts": "2026-08-31T23:13:17.738215+00:00",
+        "tag": "open iron_condor IWM",
+        "reason": "ouverture iron_condor IWM (cr\u00e9dit 1.76/action)",
+        "qty": 5,
+        "legs": [
+          {
+            "symbol": "IWM260908P00291000",
+            "side": "sell",
+            "intent": "sell_to_open"
+          },
+          {
+            "symbol": "IWM260908P00286000",
+            "side": "buy",
+            "intent": "buy_to_open"
+          },
+          {
+            "symbol": "IWM260908C00297000",
+            "side": "sell",
+            "intent": "sell_to_open"
+          },
+          {
+            "symbol": "IWM260908C00302000",
+            "side": "buy",
+            "intent": "buy_to_open"
+          }
+        ],
+        "limit_price": 1.76,
+        "dry_run": false,
+        "quote": {
+          "symbol": "IWM",
+          "kind": "iron_condor",
+          "short_strike": 291.0,
+          "long_strike": 286.0,
+          "credit": 1.76,
+          "max_loss": 1618.45,
+          "collateral": 2500.0,
+          "dte": 8,
+          "spread_pct": 0.0383,
+          "contracts": 5,
+          "short_symbol": "IWM260908P00291000",
+          "long_symbol": "IWM260908P00286000",
+          "expiry": "2026-09-08",
+          "strategy": "credit",
+          "call_short_strike": 297.0,
+          "call_long_strike": 302.0,
+          "call_short_symbol": "IWM260908C00297000",
+          "call_long_symbol": "IWM260908C00302000",
+          "put_credit": 0.81,
+          "call_credit": 0.95
+        },
+        "status": "OrderStatus.ACCEPTED",
+        "order_id": "e6a83c2b-a3c3-461c-87eb-9c16fa71c67b"
+      }
+    },
+    {
+      "ts": "2026-08-31T23:13:17.806819+00:00",
+      "symbol": "AAPL",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -565$, DTE 9)"
+    },
+    {
+      "ts": "2026-08-31T23:13:17.806836+00:00",
+      "symbol": "MSFT",
+      "action": "hold",
+      "reason": "risk_guard : illiquide : spread bid-ask 45.6% > 15%"
+    },
+    {
+      "ts": "2026-08-31T23:13:17.806841+00:00",
+      "symbol": "NVDA",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -95$, DTE 9)"
+    },
+    {
+      "ts": "2026-08-31T23:13:17.806844+00:00",
+      "symbol": "AMD",
+      "action": "close",
+      "reason": "stop : P&L -1350$ <= -2x le cr\u00e9dit",
+      "order": {
+        "ts": "2026-08-31T23:13:17.868715+00:00",
+        "tag": "close bear_call AMD",
+        "reason": "stop : P&L -1350$ <= -2x le cr\u00e9dit",
+        "qty": 5,
+        "legs": [
+          {
+            "symbol": "AMD260909C00490000",
+            "side": "buy",
+            "intent": "buy_to_close"
+          },
+          {
+            "symbol": "AMD260909C00495000",
+            "side": "sell",
+            "intent": "sell_to_close"
+          }
+        ],
+        "limit_price": null,
+        "dry_run": false,
+        "status": "OrderStatus.ACCEPTED",
+        "order_id": "fcc4baf3-25e4-4af4-8e51-55bceaafdd12"
+      }
+    },
+    {
+      "ts": "2026-08-31T23:13:17.933665+00:00",
+      "symbol": "META",
+      "action": "hold",
+      "reason": "risk_guard : illiquide : spread bid-ask 72.7% > 15%"
+    },
+    {
+      "ts": "2026-08-31T23:13:17.933681+00:00",
+      "symbol": "GOOGL",
+      "action": "hold",
+      "reason": "risk_guard : illiquide : spread bid-ask 29.1% > 15%"
+    },
+    {
+      "ts": "2026-08-31T23:13:17.933685+00:00",
+      "symbol": "AMZN",
+      "action": "open",
+      "reason": "ouverture iron_condor AMZN (cr\u00e9dit 2.40/action)",
+      "order": {
+        "ts": "2026-08-31T23:13:17.933718+00:00",
+        "tag": "open iron_condor AMZN",
+        "reason": "ouverture iron_condor AMZN (cr\u00e9dit 2.40/action)",
+        "qty": 5,
+        "legs": [
+          {
+            "symbol": "AMZN260909P00255000",
+            "side": "sell",
+            "intent": "sell_to_open"
+          },
+          {
+            "symbol": "AMZN260909P00250000",
+            "side": "buy",
+            "intent": "buy_to_open"
+          },
+          {
+            "symbol": "AMZN260909C00265000",
+            "side": "sell",
+            "intent": "sell_to_open"
+          },
+          {
+            "symbol": "AMZN260909C00270000",
+            "side": "buy",
+            "intent": "buy_to_open"
+          }
+        ],
+        "limit_price": 2.4,
+        "dry_run": false,
+        "quote": {
+          "symbol": "AMZN",
+          "kind": "iron_condor",
+          "short_strike": 255.0,
+          "long_strike": 250.0,
+          "credit": 2.4,
+          "max_loss": 1298.3000000000002,
+          "collateral": 2500.0,
+          "dte": 9,
+          "spread_pct": 0.134,
+          "contracts": 5,
+          "short_symbol": "AMZN260909P00255000",
+          "long_symbol": "AMZN260909P00250000",
+          "expiry": "2026-09-09",
+          "strategy": "credit",
+          "call_short_strike": 265.0,
+          "call_long_strike": 270.0,
+          "call_short_symbol": "AMZN260909C00265000",
+          "call_long_symbol": "AMZN260909C00270000",
+          "put_credit": 1.27,
+          "call_credit": 1.13
+        },
+        "status": "OrderStatus.ACCEPTED",
+        "order_id": "0f599ee9-3c57-46c6-91b2-0d2550a35dce"
+      }
+    },
+    {
+      "ts": "2026-08-31T23:13:18.002696+00:00",
+      "symbol": "TSLA",
+      "action": "open",
+      "reason": "ouverture bull_put TSLA (cr\u00e9dit 1.41/action)",
+      "order": {
+        "ts": "2026-08-31T23:13:18.002729+00:00",
+        "tag": "open bull_put TSLA",
+        "reason": "ouverture bull_put TSLA (cr\u00e9dit 1.41/action)",
+        "qty": 5,
+        "legs": [
+          {
+            "symbol": "TSLA260909P00357500",
+            "side": "sell",
+            "intent": "sell_to_open"
+          },
+          {
+            "symbol": "TSLA260909P00352500",
+            "side": "buy",
+            "intent": "buy_to_open"
+          }
+        ],
+        "limit_price": 1.41,
+        "dry_run": false,
+        "quote": {
+          "symbol": "TSLA",
+          "kind": "bull_put",
+          "short_strike": 357.5,
+          "long_strike": 352.5,
+          "credit": 1.41,
+          "max_loss": 1793.25,
+          "collateral": 2500.0,
+          "dte": 9,
+          "spread_pct": 0.0614,
+          "contracts": 5,
+          "short_symbol": "TSLA260909P00357500",
+          "long_symbol": "TSLA260909P00352500",
+          "expiry": "2026-09-09",
+          "strategy": "credit",
+          "call_short_strike": 0.0,
+          "call_long_strike": 0.0,
+          "call_short_symbol": "",
+          "call_long_symbol": "",
+          "put_credit": 0.0,
+          "call_credit": 0.0
+        },
+        "status": "OrderStatus.ACCEPTED",
+        "order_id": "9be34352-0d45-4fbe-86db-fdc918e2862d"
+      }
     }
   ],
-  "generated_at": "2026-08-31T21:41:20.178640+00:00",
-  "dry_run": true,
+  "generated_at": "2026-08-31T23:13:18.067502+00:00",
+  "dry_run": false,
   "latest": {
-    "ts": "2026-08-31T21:41:20.178640+00:00",
-    "dry_run": true,
+    "ts": "2026-08-31T23:13:18.067502+00:00",
+    "dry_run": false,
     "equity": 98011.15,
     "cash": 101526.15,
     "buying_power": 93026.15,
