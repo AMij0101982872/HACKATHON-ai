@@ -51,7 +51,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "rien à publier"
           else
-            git commit -m "chore(agent): passe $(date -u +%FT%TZ) [skip ci]"
+            git commit -m "chore(agent): passe $(date -u +%FT%TZ)"
             git pull --rebase --autostash origin "${GITHUB_REF_NAME}" || true
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
