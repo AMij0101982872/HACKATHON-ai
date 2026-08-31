@@ -84,18 +84,33 @@ class AlpacaOptionsBroker:
             long = next((x for x in grp if x.qty > 0), None)
             if not short or not long:
                 continue
-            kind: SpreadKind = "bear_call" if opt_type == "call" else "bull_put"
-            contracts = int(min(abs(short.qty), abs(long.qty)))
+            contracts = max(int(min(abs(short.qty), abs(long.qty))), 1)
+
+            # Débit vs crédit d'après l'ordre des strikes :
+            #   put  : jambe longue plus haute  -> put debit  ; sinon bull put (crédit)
+            #   call : jambe longue plus basse  -> call debit  ; sinon bear call (crédit)
+            if opt_type == "put":
+                is_debit = long.strike > short.strike
+                kind: SpreadKind = "put_debit" if is_debit else "bull_put"
+            else:
+                is_debit = long.strike < short.strike
+                kind = "call_debit" if is_debit else "bear_call"
+
+            s_mid, l_mid = self._mid(short.occ), self._mid(long.occ)
+            if is_debit:
+                cur = max((l_mid - s_mid), 0.0)   # valeur de revente du debit spread
+            else:
+                cur = max((s_mid - l_mid), 0.0)   # coût de rachat du credit spread
             entry = self._entry_credit(short.occ, long.occ)
-            cur = self._spread_mid(short.occ, long.occ)
             out.append(
                 SpreadPosition(
                     symbol=under,
                     kind=kind,
                     entry_credit=entry if entry is not None else cur,
-                    current_value=max(cur, 0.0),
+                    current_value=cur,
                     dte=max((expiry - date.today()).days, 0),
-                    contracts=max(contracts, 1),
+                    contracts=contracts,
+                    strategy="debit" if is_debit else "credit",
                 )
             )
         return out
@@ -154,18 +169,73 @@ class AlpacaOptionsBroker:
             expiry=expiry.isoformat(),
         )
 
+    def quote_debit_spread(
+        self, symbol: str, direction: str, target_delta: float, width: float, dte: int
+    ) -> SpreadQuote | None:
+        spot = self._spot(symbol)
+        vol = self._vol(symbol)
+        if not spot or not vol:
+            return None
+        opt_type = "call" if direction == "call" else "put"
+
+        contracts = self._contracts_in_window(symbol, opt_type, dte)
+        if not contracts:
+            return None
+        expiry = min(contracts, key=lambda c: abs((c["expiry"] - date.today()).days - dte))["expiry"]
+        strikes = sorted(c["strike"] for c in contracts if c["expiry"] == expiry)
+        by_strike = {c["strike"]: c for c in contracts if c["expiry"] == expiry}
+        if not strikes:
+            return None
+
+        t = max((expiry - date.today()).days, 1) / 365.0
+        wanted = strike_for_delta(spot, target_delta, t, vol, opt_type)  # jambe LONGUE (proche monnaie)
+        long_k = min(strikes, key=lambda k: abs(k - wanted))
+        short_target = long_k + width if opt_type == "call" else long_k - width
+        far = [k for k in strikes if (k > long_k) == (opt_type == "call")]
+        if not far:
+            return None
+        short_k = min(far, key=lambda k: abs(k - short_target))
+
+        lq, sq = self._quote(by_strike[long_k]["occ"]), self._quote(by_strike[short_k]["occ"])
+        if not lq or not sq:
+            return None
+        l_mid = (lq[0] + lq[1]) / 2.0
+        s_mid = (sq[0] + sq[1]) / 2.0
+        debit = (l_mid - s_mid) * (1.0 + self.slippage_pct / 2.0)  # on paie au-dessus du mid
+        if debit <= 0:
+            return None
+        spread_pct = (lq[1] - lq[0]) / l_mid if l_mid > 0 else 1.0
+        return SpreadQuote(
+            symbol=symbol,
+            kind="call_debit" if opt_type == "call" else "put_debit",
+            short_strike=short_k,
+            long_strike=long_k,
+            credit=round(debit, 2),
+            max_loss=round(debit * 100.0, 2),
+            collateral=round(debit * 100.0, 2),
+            dte=(expiry - date.today()).days,
+            spread_pct=round(spread_pct, 4),
+            short_symbol=by_strike[short_k]["occ"],
+            long_symbol=by_strike[long_k]["occ"],
+            expiry=expiry.isoformat(),
+            strategy="debit",
+        )
+
     # ------------------------------------------------------------------
     # Écriture
     # ------------------------------------------------------------------
     def execute_open(self, q: SpreadQuote, reason: str) -> dict:
+        # credit : on VEND la jambe courte, on ACHÈTE la jambe longue (encaisse un crédit)
+        # debit  : on ACHÈTE la jambe longue, on VEND la jambe courte (paie un débit)
         legs = [
             OptionLegRequest(symbol=q.short_symbol, ratio_qty=1, side=OrderSide.SELL,
                              position_intent=PositionIntent.SELL_TO_OPEN),
             OptionLegRequest(symbol=q.long_symbol, ratio_qty=1, side=OrderSide.BUY,
                              position_intent=PositionIntent.BUY_TO_OPEN),
         ]
-        return self._submit(legs, limit_price=round(q.credit, 2), tag=f"open {q.kind} {q.symbol}",
-                            reason=reason, meta={"quote": q.__dict__})
+        return self._submit(legs, limit_price=round(q.credit, 2),
+                            tag=f"open {q.kind} {q.symbol}", reason=reason,
+                            meta={"quote": q.__dict__})
 
     def execute_close(self, position: SpreadPosition, reason: str) -> dict | None:
         legs = self._legs_for_close(position.symbol)
@@ -267,11 +337,12 @@ class AlpacaOptionsBroker:
         except Exception:
             return None
 
+    def _mid(self, occ: str) -> float:
+        q = self._quote(occ)
+        return (q[0] + q[1]) / 2.0 if q else 0.0
+
     def _spread_mid(self, short_occ: str, long_occ: str) -> float:
-        sq, lq = self._quote(short_occ), self._quote(long_occ)
-        if not sq or not lq:
-            return 0.0
-        return max((sq[0] + sq[1]) / 2 - (lq[0] + lq[1]) / 2, 0.0)
+        return max(self._mid(short_occ) - self._mid(long_occ), 0.0)
 
     def _entry_credit(self, short_occ: str, long_occ: str) -> float | None:
         """Crédit d'entrée si on le retrouve dans l'état persistant, sinon None."""

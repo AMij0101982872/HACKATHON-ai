@@ -84,6 +84,36 @@ class FakeBroker(Broker):
             spread_pct=self.liquidity_spread_pct,
         )
 
+    def quote_debit_spread(
+        self, symbol: str, direction: str, target_delta: float, width: float, dte: int
+    ) -> SpreadQuote | None:
+        if not self.chain_available or symbol not in self.spot:
+            return None
+        spot = self.spot[symbol]
+        t = dte / 365.0
+        if direction == "call":
+            long_k = strike_for_delta(spot, target_delta, t, self.vol, "call")
+            spread = VerticalSpread("call", short_strike=long_k + width, long_strike=long_k)
+        else:
+            long_k = strike_for_delta(spot, target_delta, t, self.vol, "put")
+            spread = VerticalSpread("put", short_strike=long_k - width, long_strike=long_k)
+
+        # price_vertical_credit = prix(jambe courte) - prix(jambe longue) -> négatif ici
+        debit = -price_vertical_credit(spread, spot=spot, t=t, vol=self.vol)
+        debit *= 1.0 + self.liquidity_spread_pct / 2.0  # on paie au-dessus du mid
+        return SpreadQuote(
+            symbol=symbol,
+            kind="call_debit" if direction == "call" else "put_debit",
+            short_strike=spread.short_strike,
+            long_strike=spread.long_strike,
+            credit=round(debit, 2),
+            max_loss=round(debit * 100.0, 2),
+            collateral=round(debit * 100.0, 2),
+            dte=dte,
+            spread_pct=self.liquidity_spread_pct,
+            strategy="debit",
+        )
+
     # -- helpers de scénario -------------------------------------
     def add_position(
         self,
@@ -93,6 +123,7 @@ class FakeBroker(Broker):
         current_value: float = 1.0,
         dte: int = 5,
         contracts: int = 1,
+        strategy: str = "credit",
     ) -> None:
         self.positions.append(
             SpreadPosition(
@@ -102,5 +133,6 @@ class FakeBroker(Broker):
                 current_value=current_value,
                 dte=dte,
                 contracts=contracts,
+                strategy=strategy,
             )
         )

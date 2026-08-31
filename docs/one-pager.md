@@ -29,6 +29,11 @@ largeur **5 $**, échéance **~7 jours**. Gestion : prise de profit à **50 %** 
 stop à **2×** le crédit, clôture à **DTE ≤ 1** ; un spread directionnel se clôture aussi si le
 régime bascule à l'opposé ; l'iron condor est laissé courir vers sa cible (évite le *whipsaw*).
 
+**Poche directionnelle.** Sur régime *franchement* marqué (|écart MM| ≥ 6 %) et feu vert de
+l'analyste, l'agent **achète** un debit spread (call ou put, ~14 j) — perte plafonnée à la
+prime payée, budget total ≤ 15 % de l'equity. C'est la brique qui cherche l'upside que la
+vente de prime ne donne pas.
+
 **Backtest de référence** (6 sous-jacents, 17 mois, primes modélisées Black-Scholes) :
 rendement **+2,1 %**, drawdown max **−7,2 %**, Sharpe 0,36, **569 trades**, **75,7 %** gagnants.
 À lire comme un *profil de comportement* : le modèle sous-estime la prime réelle (vol implicite

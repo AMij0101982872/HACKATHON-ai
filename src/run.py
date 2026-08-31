@@ -27,9 +27,10 @@ from alpaca.data.timeframe import TimeFrame
 
 from src.alpaca_options import AlpacaOptionsBroker, _load_state, _save_state
 from src.analyst import Analyst, AnalystView
+from src.directional_pocket import DirectionalPocket, PocketConfig
 from src.risk_guard import risk_params
 from src.spread_agent import SpreadAgent, SpreadConfig, SymbolView
-from src.strategy import sma_regime
+from src.strategy import sma_gap, sma_regime
 
 LIVE_JSON = Path("web/public/data/live.json")
 MAX_LOG = 2000
@@ -42,6 +43,15 @@ def _spread_config() -> SpreadConfig:
         dte=config.DTE_TARGET,
         take_profit_pct=config.TAKE_PROFIT_PCT,
         stop_loss_mult=config.STOP_LOSS_MULT,
+    )
+
+
+def _pocket_config() -> PocketConfig:
+    return PocketConfig(
+        strong_gap=config.POCKET_STRONG_GAP,
+        width=config.SPREAD_WIDTH,
+        dte=config.POCKET_DTE,
+        max_pocket_pct=config.POCKET_MAX_PCT,
     )
 
 
@@ -62,10 +72,12 @@ def _build_views(
             print(f"{sym}: historique insuffisant ({len(closes)} barres)")
             continue
         regime = sma_regime(closes, config.FAST_MA, config.SLOW_MA, config.REGIME_THRESHOLD)
+        gap = sma_gap(closes, config.FAST_MA, config.SLOW_MA)
         op = opinions.get(sym) or AnalystView(True, "unknown", "")
         views.append(
             SymbolView(sym, regime, analyst_ok=op.ok,
-                       analyst_note=f"{op.sentiment}: {op.note}" if op.note else op.sentiment)
+                       analyst_note=f"{op.sentiment}: {op.note}" if op.note else op.sentiment,
+                       gap=gap)
         )
     return views
 
@@ -90,6 +102,10 @@ def run_once() -> dict:
           + f" ({opinions.get(config.OPTION_UNIVERSE[0]).note[:40] if opinions else ''})")
 
     decisions = agent.decide(views)
+    if config.POCKET_ENABLED:
+        pocket = DirectionalPocket(broker, risk_params(config.RISK_PROFILE), _pocket_config())
+        decisions += pocket.decide(views)
+
     events: list[dict] = []
     for d in decisions:
         line = {"ts": datetime.now(timezone.utc).isoformat(), "symbol": d.symbol,
@@ -98,7 +114,8 @@ def run_once() -> dict:
             rec = broker.execute_open(d.quote, d.reason)
             _remember_entry_credit(d.quote)
             line["order"] = rec
-            print(f"  OPEN  {d.symbol:5} {d.quote.kind:11} crédit ${d.quote.credit:.2f} "
+            tag = "DÉBIT" if d.quote.strategy == "debit" else "crédit"
+            print(f"  OPEN  {d.symbol:5} {d.quote.kind:11} {tag} ${d.quote.credit:.2f} "
                   f"maxLoss ${d.quote.max_loss:.0f} -> {rec.get('status')}")
         elif d.action == "close":
             pos = positions.get(d.symbol)

@@ -36,7 +36,8 @@ from src.spread_agent import (
     SpreadQuote,
     SymbolView,
 )
-from src.strategy import sma_regime
+from src.directional_pocket import DirectionalPocket, PocketConfig
+from src.strategy import sma_gap, sma_regime
 
 Series = list[tuple[date, float]]
 TRADING_DAYS = 252
@@ -50,25 +51,31 @@ class _Pos:
     short_strike: float
     long_strike: float
     width: float
-    entry_credit: float  # par action, après slippage
+    entry_credit: float  # par action, après slippage (crédit reçu OU débit payé)
     contracts: int
     open_date: date
     expiry_date: date
     open_reason: str
+    strategy: str = "credit"
 
     def dte(self, today: date) -> int:
         return (self.expiry_date - today).days
 
     def _option_type(self) -> str:
-        return "call" if self.kind == "bear_call" else "put"
+        return "call" if self.kind in ("bear_call", "call_debit") else "put"
 
     def mark(self, spot: float, vol: float, today: date) -> float:
-        """Coût actuel pour racheter le spread, par action (>= 0)."""
+        """Valeur actuelle pour DÉNOUER le spread, par action (>= 0).
+
+        - credit : coût de rachat  = prix(jambe courte) - prix(jambe longue)
+        - debit  : valeur de revente = prix(jambe longue) - prix(jambe courte)
+        """
         t = max(self.dte(today), 0) / 365.0
         spread = VerticalSpread(
             self._option_type(), self.short_strike, self.long_strike, self.contracts
         )
-        return max(price_vertical_credit(spread, spot=spot, t=t, vol=vol), 0.0)
+        v = price_vertical_credit(spread, spot=spot, t=t, vol=vol)  # short - long
+        return max(-v if self.strategy == "debit" else v, 0.0)
 
 
 class BacktestBroker:
@@ -96,8 +103,13 @@ class BacktestBroker:
         return p.mark(self.spot.get(p.symbol, p.short_strike), self.vol.get(p.symbol, 0.25), self.today)
 
     def equity(self) -> float:
-        liab = sum(self._mark(p) * 100.0 * p.contracts for p in self._positions)
-        return self.cash - liab
+        credit_liab = sum(
+            self._mark(p) * 100.0 * p.contracts for p in self._positions if p.strategy == "credit"
+        )
+        debit_asset = sum(
+            self._mark(p) * 100.0 * p.contracts for p in self._positions if p.strategy == "debit"
+        )
+        return self.cash - credit_liab + debit_asset
 
     # -- interface Broker --------------------------------------
     def account(self) -> AccountSnapshot:
@@ -119,9 +131,39 @@ class BacktestBroker:
                 current_value=self._mark(p),
                 dte=max(p.dte(self.today), 0),
                 contracts=p.contracts,
+                strategy=p.strategy,
             )
             for p in self._positions
         ]
+
+    def quote_debit_spread(
+        self, symbol: str, direction: str, target_delta: float, width: float, dte: int
+    ) -> SpreadQuote | None:
+        spot = self.spot.get(symbol)
+        vol = self.vol.get(symbol)
+        if not spot or spot <= 0 or not vol:
+            return None
+        t = dte / 365.0
+        opt_type = "call" if direction == "call" else "put"
+        long_k = strike_for_delta(spot, target_delta, t, vol, opt_type)
+        short_k = long_k + width if opt_type == "call" else long_k - width
+        spread = VerticalSpread(opt_type, short_strike=short_k, long_strike=long_k)
+        debit = -price_vertical_credit(spread, spot=spot, t=t, vol=vol)  # long - short
+        debit *= 1.0 + self.slippage_pct / 2.0
+        if debit <= 0:
+            return None
+        return SpreadQuote(
+            symbol=symbol,
+            kind="call_debit" if opt_type == "call" else "put_debit",
+            short_strike=short_k,
+            long_strike=long_k,
+            credit=debit,
+            max_loss=debit * 100.0,
+            collateral=debit * 100.0,
+            dte=dte,
+            spread_pct=self.slippage_pct,
+            strategy="debit",
+        )
 
     def quote_credit_spread(
         self, symbol: str, kind: SpreadKind, target_delta: float, width: float, dte: int
@@ -164,27 +206,35 @@ class BacktestBroker:
                 open_date=self.today,
                 expiry_date=self.today + timedelta(days=q.dte),
                 open_reason=reason,
+                strategy=q.strategy,
             )
         )
-        self.cash += q.credit * 100.0 * q.contracts
+        flow = q.credit * 100.0 * q.contracts
+        self.cash += flow if q.strategy == "credit" else -flow
 
     def execute_close(self, symbol: str, reason: str) -> None:
         for p in list(self._positions):
             if p.symbol != symbol:
                 continue
-            cost = self._mark(p) * 100.0 * p.contracts
-            self.cash -= cost
-            credit_total = p.entry_credit * 100.0 * p.contracts
+            value = self._mark(p) * 100.0 * p.contracts
+            entry_total = p.entry_credit * 100.0 * p.contracts
+            if p.strategy == "debit":
+                self.cash += value                 # on revend l'actif
+                pl = value - entry_total
+            else:
+                self.cash -= value                 # on rachète le spread
+                pl = entry_total - value
             self.closed_trades.append(
                 {
                     "symbol": p.symbol,
                     "kind": p.kind,
+                    "strategy": p.strategy,
                     "open_date": p.open_date.isoformat(),
                     "close_date": self.today.isoformat(),
                     "days_held": (self.today - p.open_date).days,
-                    "entry_credit": round(credit_total, 2),
-                    "exit_cost": round(cost, 2),
-                    "pl": round(credit_total - cost, 2),
+                    "entry_credit": round(entry_total, 2),
+                    "exit_cost": round(value, 2),
+                    "pl": round(pl, 2),
                     "open_reason": p.open_reason,
                     "close_reason": reason,
                 }
@@ -209,6 +259,8 @@ def run_backtest(
     starting_equity: float = 100_000.0,
     slippage_pct: float = None,
     vol_window: int = 20,
+    use_pocket: bool | None = None,
+    pocket_cfg: PocketConfig | None = None,
     data: dict[str, Series] | None = None,
 ) -> dict:
     """Exécute le backtest et renvoie un dict (courbe d'equity, trades, décisions, métriques)."""
@@ -224,6 +276,13 @@ def run_backtest(
     slow_ma = slow_ma or config.SLOW_MA
     regime_threshold = config.REGIME_THRESHOLD if regime_threshold is None else regime_threshold
     slippage_pct = config.SLIPPAGE_PCT if slippage_pct is None else slippage_pct
+    use_pocket = config.POCKET_ENABLED if use_pocket is None else use_pocket
+    pocket_cfg = pocket_cfg or PocketConfig(
+        strong_gap=config.POCKET_STRONG_GAP,
+        width=config.SPREAD_WIDTH,
+        dte=config.POCKET_DTE,
+        max_pocket_pct=config.POCKET_MAX_PCT,
+    )
 
     if data is None:
         from backtest.data import load_daily_closes
@@ -238,6 +297,7 @@ def run_backtest(
     all_dates = sorted({d for rows in data.values() for d, _ in rows})
     broker = BacktestBroker(starting_equity, slippage_pct)
     agent = SpreadAgent(broker, risk_params, spread_cfg)
+    pocket = DirectionalPocket(broker, risk_params, pocket_cfg) if use_pocket else None
 
     equity_curve: list[dict] = []
     decisions_log: list[dict] = []
@@ -253,7 +313,11 @@ def run_backtest(
             spot[s] = hist[-1]
             vol[s] = realized_vol(hist, vol_window)
             if len(hist) >= slow_ma + 1:
-                views.append(SymbolView(s, sma_regime(hist, fast_ma, slow_ma, regime_threshold)))
+                views.append(SymbolView(
+                    s,
+                    sma_regime(hist, fast_ma, slow_ma, regime_threshold),
+                    gap=sma_gap(hist, fast_ma, slow_ma),
+                ))
 
         broker.set_day(d, spot, vol)
         broker.start_of_day_equity = broker.equity()
@@ -263,7 +327,10 @@ def run_backtest(
             if p.dte(d) <= 0:
                 broker.execute_close(p.symbol, "échéance atteinte (règlement)")
 
-        for dec in agent.decide(views):
+        day_decisions = list(agent.decide(views))
+        if pocket is not None:
+            day_decisions += pocket.decide(views)
+        for dec in day_decisions:
             decisions_log.append(
                 {"date": d.isoformat(), "symbol": dec.symbol, "action": dec.action, "reason": dec.reason}
             )

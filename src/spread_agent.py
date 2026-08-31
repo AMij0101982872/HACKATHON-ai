@@ -13,9 +13,10 @@ from typing import Literal, Protocol
 
 from src.risk_guard import AccountState, ProposedOrder, RiskDecision, RiskParams, check_order
 
-SpreadKind = Literal["bull_put", "bear_call", "iron_condor"]
+SpreadKind = Literal["bull_put", "bear_call", "iron_condor", "call_debit", "put_debit"]
 Regime = Literal["bullish", "bearish", "neutral"]
 Action = Literal["open", "close", "hold"]
+Strategy = Literal["credit", "debit"]
 
 
 # --- Données échangées avec le broker -------------------------------------
@@ -34,14 +35,21 @@ class SpreadPosition:
 
     symbol: str
     kind: SpreadKind
-    entry_credit: float    # crédit encaissé à l'ouverture, PAR ACTION
-    current_value: float   # coût actuel pour racheter le spread, PAR ACTION (>= 0)
+    entry_credit: float    # à l'ouverture, PAR ACTION : crédit reçu (credit) ou débit payé, signé (debit)
+    current_value: float   # valeur actuelle pour DÉNOUER, PAR ACTION (>= 0)
     dte: int
     contracts: int = 1
+    strategy: Strategy = "credit"
 
     @property
     def unrealized_pl(self) -> float:
-        """P&L latent en dollars (crédit reçu - coût de rachat)."""
+        """P&L latent en dollars.
+
+        - credit : (crédit reçu − coût de rachat) × 100 × contrats
+        - debit  : (valeur de revente − débit payé) × 100 × contrats
+        """
+        if self.strategy == "debit":
+            return (self.current_value - self.entry_credit) * 100.0 * self.contracts
         return (self.entry_credit - self.current_value) * 100.0 * self.contracts
 
 
@@ -62,6 +70,7 @@ class SpreadQuote:
     short_symbol: str = ""  # symbole OCC de la jambe courte (broker réel)
     long_symbol: str = ""   # symbole OCC de la jambe longue (broker réel)
     expiry: str = ""        # date d'échéance ISO (broker réel)
+    strategy: Strategy = "credit"  # "debit" -> `credit` porte le débit payé (>0)
 
     @property
     def width(self) -> float:
@@ -80,6 +89,7 @@ class SymbolView:
     regime: Regime            # sortie de src.strategy.sma_regime
     analyst_ok: bool = True   # feu vert de l'agent analyste LLM
     analyst_note: str = ""
+    gap: float | None = None  # écart relatif MM courte/longue (src.strategy.sma_gap) ; sert à la poche directionnelle
 
 
 @dataclass(frozen=True)
@@ -100,6 +110,13 @@ class Broker(Protocol):
     def quote_credit_spread(
         self, symbol: str, kind: SpreadKind, target_delta: float, width: float, dte: int
     ) -> SpreadQuote | None: ...
+
+    def quote_debit_spread(
+        self, symbol: str, direction: str, target_delta: float, width: float, dte: int
+    ) -> SpreadQuote | None:
+        """direction : 'call' (haussier) ou 'put' (baissier). Optionnel : seule la
+        poche directionnelle l'appelle."""
+        ...
 
 
 # --- Config du moteur --------------------------------------------------
@@ -135,12 +152,15 @@ class SpreadAgent:
     # -- API publique --------------------------------------------------
     def decide(self, views: list[SymbolView]) -> list[Decision]:
         acct = self.broker.account()
-        positions = {p.symbol: p for p in self.broker.open_spreads()}
-        open_count = len(positions)
+        all_positions = self.broker.open_spreads()
+        # ce moteur ne gère QUE les spreads à crédit ; les positions "debit" sont
+        # celles de la poche directionnelle (src/directional_pocket.py).
+        credit_pos = {p.symbol: p for p in all_positions if p.strategy == "credit"}
+        open_count = len(all_positions)  # le plafond de positions compte tout
 
         out: list[Decision] = []
         for view in views:
-            held = positions.get(view.symbol)
+            held = credit_pos.get(view.symbol)
             if held is not None:
                 out.append(self._manage(held, view))
             else:

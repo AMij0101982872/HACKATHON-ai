@@ -16,7 +16,9 @@ Deux agents :
    | baissier | bear call spread |
    | neutre | iron condor (côté put) |
    Gestion : prise de profit à 50 % du crédit, stop à 2× le crédit, clôture à
-   l'approche de l'échéance. Tout ordre passe par un **garde-fou déterministe**
+   l'approche de l'échéance. **Poche directionnelle** (`src/directional_pocket.py`) : sur
+   régime franchement marqué + feu vert analyste, achat d'un debit spread (call/put,
+   budget ≤ 15 % de l'equity, perte plafonnée à la prime). Tout ordre passe par un **garde-fou déterministe**
    (`src/risk_guard.py`) : kill-switch perte du jour / drawdown, plafond de
    positions, perte max par structure, exposition par sous-jacent, buffer de cash,
    fenêtre d'échéance, liquidité.

@@ -39,6 +39,12 @@ TAKE_PROFIT_PCT = float(_get("TAKE_PROFIT_PCT", "0.5"))  # clôture à 50 % du c
 STOP_LOSS_MULT = float(_get("STOP_LOSS_MULT", "2"))      # stop à 2x le crédit
 SLIPPAGE_PCT = float(_get("SLIPPAGE_PCT", "0.03"))       # traversée du bid-ask à l'exécution
 
+# --- Poche directionnelle (achat de debit spreads sur régime marqué) --------
+POCKET_ENABLED = _get("POCKET_ENABLED", "true").lower() not in ("false", "0", "no")
+POCKET_STRONG_GAP = float(_get("POCKET_STRONG_GAP", "0.06"))  # |écart MM| minimal
+POCKET_MAX_PCT = float(_get("POCKET_MAX_PCT", "0.15"))        # débit total <= % de l'equity
+POCKET_DTE = int(_get("POCKET_DTE", "14"))
+
 # --- Gestion du risque ------------------------------------------------------
 # Profil appliqué par l'agent : "conservative" | "balanced" | "aggressive"
 # (presets définis dans src/risk_guard.py). Le hackathon vise "aggressive".
