@@ -95,6 +95,12 @@
       "equity": 100001.9,
       "cash": 100181.9,
       "positions": 2
+    },
+    {
+      "ts": "2026-08-31T19:55:08.935756+00:00",
+      "equity": 97802.15,
+      "cash": 101526.15,
+      "positions": 5
     }
   ],
   "decisions": [
@@ -3106,26 +3112,89 @@
         "status": "OrderStatus.PENDING_NEW",
         "order_id": "0cf75b55-49ce-48b3-9066-d05335e001c4"
       }
+    },
+    {
+      "ts": "2026-08-31T19:55:08.935713+00:00",
+      "symbol": "SPY",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L +13$, DTE 8)"
+    },
+    {
+      "ts": "2026-08-31T19:55:08.935735+00:00",
+      "symbol": "QQQ",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L +26$, DTE 8)"
+    },
+    {
+      "ts": "2026-08-31T19:55:08.935742+00:00",
+      "symbol": "AAPL",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L +58$, DTE 9)"
+    },
+    {
+      "ts": "2026-08-31T19:55:08.935746+00:00",
+      "symbol": "MSFT",
+      "action": "hold",
+      "reason": "risk_guard : illiquide : spread bid-ask 105.0% > 15%"
+    },
+    {
+      "ts": "2026-08-31T19:55:08.935750+00:00",
+      "symbol": "NVDA",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L +105$, DTE 9)"
+    },
+    {
+      "ts": "2026-08-31T19:55:08.935753+00:00",
+      "symbol": "AMD",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -280$, DTE 9)"
     }
   ],
-  "generated_at": "2026-08-31T19:16:25.220946+00:00",
+  "generated_at": "2026-08-31T19:55:08.935756+00:00",
   "dry_run": false,
   "latest": {
-    "ts": "2026-08-31T19:16:25.220946+00:00",
+    "ts": "2026-08-31T19:55:08.935756+00:00",
     "dry_run": false,
-    "equity": 100001.9,
-    "cash": 100181.9,
-    "buying_power": 99181.9,
+    "equity": 97802.15,
+    "cash": 101526.15,
+    "buying_power": 93026.15,
     "start_of_day_equity": 100000.0,
     "high_water_mark": 100008.9,
-    "open_positions": 2,
+    "open_positions": 5,
     "positions": [
+      {
+        "symbol": "AAPL",
+        "kind": "bull_put",
+        "entry_credit": 1.53,
+        "current_value": 1.35,
+        "unrealized_pl": 87.5,
+        "dte": 9,
+        "contracts": 5
+      },
+      {
+        "symbol": "AMD",
+        "kind": "bear_call",
+        "entry_credit": 1.13,
+        "current_value": 1.43,
+        "unrealized_pl": -150.0,
+        "dte": 9,
+        "contracts": 5
+      },
+      {
+        "symbol": "NVDA",
+        "kind": "bull_put",
+        "entry_credit": 0.85,
+        "current_value": 0.69,
+        "unrealized_pl": 82.5,
+        "dte": 9,
+        "contracts": 5
+      },
       {
         "symbol": "QQQ",
         "kind": "bull_put",
         "entry_credit": 0.98,
-        "current_value": 0.87,
-        "unrealized_pl": 11.5,
+        "current_value": 0.71,
+        "unrealized_pl": 26.5,
         "dte": 8,
         "contracts": 1
       },
@@ -3133,8 +3202,8 @@
         "symbol": "SPY",
         "kind": "bull_put",
         "entry_credit": 0.91,
-        "current_value": 0.86,
-        "unrealized_pl": 5.5,
+        "current_value": 0.8,
+        "unrealized_pl": 10.5,
         "dte": 8,
         "contracts": 1
       }
