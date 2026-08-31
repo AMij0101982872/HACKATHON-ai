@@ -26,6 +26,7 @@ from alpaca.data.requests import StockBarsRequest
 from alpaca.data.timeframe import TimeFrame
 
 from src.alpaca_options import AlpacaOptionsBroker, _load_state, _save_state
+from src.analyst import Analyst, AnalystView
 from src.risk_guard import risk_params
 from src.spread_agent import SpreadAgent, SpreadConfig, SymbolView
 from src.strategy import sma_regime
@@ -44,7 +45,9 @@ def _spread_config() -> SpreadConfig:
     )
 
 
-def _build_views(broker: AlpacaOptionsBroker) -> list[SymbolView]:
+def _build_views(
+    broker: AlpacaOptionsBroker, opinions: dict[str, AnalystView]
+) -> list[SymbolView]:
     start = datetime.now(timezone.utc) - timedelta(days=90)
     views: list[SymbolView] = []
     for sym in config.OPTION_UNIVERSE:
@@ -59,8 +62,11 @@ def _build_views(broker: AlpacaOptionsBroker) -> list[SymbolView]:
             print(f"{sym}: historique insuffisant ({len(closes)} barres)")
             continue
         regime = sma_regime(closes, config.FAST_MA, config.SLOW_MA, config.REGIME_THRESHOLD)
-        # analyst_ok reste True tant que l'agent analyste n'est pas branché
-        views.append(SymbolView(sym, regime, analyst_ok=True))
+        op = opinions.get(sym) or AnalystView(True, "unknown", "")
+        views.append(
+            SymbolView(sym, regime, analyst_ok=op.ok,
+                       analyst_note=f"{op.sentiment}: {op.note}" if op.note else op.sentiment)
+        )
     return views
 
 
@@ -76,8 +82,12 @@ def run_once() -> dict:
     print(f"equity ${acct.equity:,.2f} | cash ${acct.cash:,.2f} | "
           f"BP ${acct.buying_power:,.2f} | positions {len(positions)}")
 
-    views = _build_views(broker)
+    opinions = Analyst().assess(config.OPTION_UNIVERSE)
+    views = _build_views(broker, opinions)
     print("régimes : " + ", ".join(f"{v.symbol}={v.regime}" for v in views))
+    vetoed = [s for s, o in opinions.items() if not o.ok]
+    print("analyste : " + (f"écarte {', '.join(vetoed)}" if vetoed else "aucun veto")
+          + f" ({opinions.get(config.OPTION_UNIVERSE[0]).note[:40] if opinions else ''})")
 
     decisions = agent.decide(views)
     events: list[dict] = []
@@ -121,6 +131,8 @@ def run_once() -> dict:
             for p in positions.values()
         ],
         "regimes": {v.symbol: v.regime for v in views},
+        "analyst": {s: {"ok": o.ok, "sentiment": o.sentiment, "note": o.note}
+                    for s, o in opinions.items()},
     }
     _append_live(snapshot, events)
     return snapshot
