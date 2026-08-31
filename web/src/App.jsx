@@ -114,11 +114,15 @@ export default function App() {
               </defs>
               <CartesianGrid stroke="#222e40" vertical={false} />
               <XAxis dataKey="t" tick={{ fill: "#8a99ad", fontSize: 11 }} minTickGap={40} />
-              <YAxis domain={["auto", "auto"]} tick={{ fill: "#8a99ad", fontSize: 11 }} width={70}
-                tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
+              <YAxis
+                domain={([min, max]) => (max - min < 400 ? [min - 400, max + 400] : ["auto", "auto"])}
+                tick={{ fill: "#8a99ad", fontSize: 11 }}
+                width={78}
+                tickFormatter={(v) => `$${Math.round(v).toLocaleString("en-US")}`}
+              />
               <Tooltip contentStyle={{ background: "#131a26", border: "1px solid #222e40" }}
                 formatter={(v) => money(v)} />
-              <Area type="monotone" dataKey="equity" stroke="#58a6ff" fill="url(#g)" strokeWidth={2} />
+              <Area type="monotone" dataKey="equity" stroke="#58a6ff" fill="url(#g)" strokeWidth={2} isAnimationActive={false} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
