@@ -293,7 +293,9 @@ class AlpacaOptionsBroker:
         """Positions options ouvertes, normalisées."""
         legs = []
         for p in self.trading.get_all_positions():
-            if str(getattr(p, "asset_class", "")).lower() not in ("us_option", "option"):
+            ac = getattr(p, "asset_class", "")
+            ac = getattr(ac, "value", ac)  # AssetClass.US_OPTION -> "us_option"
+            if "option" not in str(ac).lower():
                 continue
             occ = p.symbol
             info = _parse_occ(occ)
