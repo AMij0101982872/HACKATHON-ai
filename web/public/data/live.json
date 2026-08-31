@@ -35,6 +35,12 @@
       "equity": 100000.0,
       "cash": 100000.0,
       "positions": 0
+    },
+    {
+      "ts": "2026-08-31T03:05:12.402637+00:00",
+      "equity": 100000.0,
+      "cash": 100000.0,
+      "positions": 0
     }
   ],
   "decisions": [
@@ -1233,12 +1239,188 @@
       "symbol": "AMD",
       "action": "hold",
       "reason": "risk_guard : illiquide : spread bid-ask 39.6% > 15%"
+    },
+    {
+      "ts": "2026-08-31T03:05:12.348808+00:00",
+      "symbol": "SPY",
+      "action": "open",
+      "reason": "ouverture iron_condor SPY (cr\u00e9dit 0.85/action)",
+      "order": {
+        "ts": "2026-08-31T03:05:12.349688+00:00",
+        "tag": "open iron_condor SPY",
+        "reason": "ouverture iron_condor SPY (cr\u00e9dit 0.85/action)",
+        "legs": [
+          {
+            "symbol": "SPY260908P00763000",
+            "side": "sell",
+            "intent": "sell_to_open"
+          },
+          {
+            "symbol": "SPY260908P00758000",
+            "side": "buy",
+            "intent": "buy_to_open"
+          }
+        ],
+        "limit_price": 0.85,
+        "dry_run": true,
+        "quote": {
+          "symbol": "SPY",
+          "kind": "iron_condor",
+          "short_strike": 763.0,
+          "long_strike": 758.0,
+          "credit": 0.85,
+          "max_loss": 415.29,
+          "collateral": 500.0,
+          "dte": 8,
+          "spread_pct": 0.0252,
+          "contracts": 1,
+          "short_symbol": "SPY260908P00763000",
+          "long_symbol": "SPY260908P00758000",
+          "expiry": "2026-09-08"
+        },
+        "status": "SIMULATED"
+      }
+    },
+    {
+      "ts": "2026-08-31T03:05:12.361344+00:00",
+      "symbol": "QQQ",
+      "action": "open",
+      "reason": "ouverture iron_condor QQQ (cr\u00e9dit 1.04/action)",
+      "order": {
+        "ts": "2026-08-31T03:05:12.361516+00:00",
+        "tag": "open iron_condor QQQ",
+        "reason": "ouverture iron_condor QQQ (cr\u00e9dit 1.04/action)",
+        "legs": [
+          {
+            "symbol": "QQQ260908P00707000",
+            "side": "sell",
+            "intent": "sell_to_open"
+          },
+          {
+            "symbol": "QQQ260908P00702000",
+            "side": "buy",
+            "intent": "buy_to_open"
+          }
+        ],
+        "limit_price": 1.04,
+        "dry_run": true,
+        "quote": {
+          "symbol": "QQQ",
+          "kind": "iron_condor",
+          "short_strike": 707.0,
+          "long_strike": 702.0,
+          "credit": 1.04,
+          "max_loss": 396.08,
+          "collateral": 500.0,
+          "dte": 8,
+          "spread_pct": 0.0241,
+          "contracts": 1,
+          "short_symbol": "QQQ260908P00707000",
+          "long_symbol": "QQQ260908P00702000",
+          "expiry": "2026-09-08"
+        },
+        "status": "SIMULATED"
+      }
+    },
+    {
+      "ts": "2026-08-31T03:05:12.374719+00:00",
+      "symbol": "AAPL",
+      "action": "open",
+      "reason": "ouverture iron_condor AAPL (cr\u00e9dit 1.34/action)",
+      "order": {
+        "ts": "2026-08-31T03:05:12.374951+00:00",
+        "tag": "open iron_condor AAPL",
+        "reason": "ouverture iron_condor AAPL (cr\u00e9dit 1.34/action)",
+        "legs": [
+          {
+            "symbol": "AAPL260909P00315000",
+            "side": "sell",
+            "intent": "sell_to_open"
+          },
+          {
+            "symbol": "AAPL260909P00310000",
+            "side": "buy",
+            "intent": "buy_to_open"
+          }
+        ],
+        "limit_price": 1.34,
+        "dry_run": true,
+        "quote": {
+          "symbol": "AAPL",
+          "kind": "iron_condor",
+          "short_strike": 315.0,
+          "long_strike": 310.0,
+          "credit": 1.34,
+          "max_loss": 365.55,
+          "collateral": 500.0,
+          "dte": 9,
+          "spread_pct": 0.078,
+          "contracts": 1,
+          "short_symbol": "AAPL260909P00315000",
+          "long_symbol": "AAPL260909P00310000",
+          "expiry": "2026-09-09"
+        },
+        "status": "SIMULATED"
+      }
+    },
+    {
+      "ts": "2026-08-31T03:05:12.389618+00:00",
+      "symbol": "MSFT",
+      "action": "hold",
+      "reason": "risk_guard : illiquide : spread bid-ask 24.2% > 15%"
+    },
+    {
+      "ts": "2026-08-31T03:05:12.389674+00:00",
+      "symbol": "NVDA",
+      "action": "open",
+      "reason": "ouverture iron_condor NVDA (cr\u00e9dit 0.84/action)",
+      "order": {
+        "ts": "2026-08-31T03:05:12.389784+00:00",
+        "tag": "open iron_condor NVDA",
+        "reason": "ouverture iron_condor NVDA (cr\u00e9dit 0.84/action)",
+        "legs": [
+          {
+            "symbol": "NVDA260909P00210000",
+            "side": "sell",
+            "intent": "sell_to_open"
+          },
+          {
+            "symbol": "NVDA260909P00205000",
+            "side": "buy",
+            "intent": "buy_to_open"
+          }
+        ],
+        "limit_price": 0.84,
+        "dry_run": true,
+        "quote": {
+          "symbol": "NVDA",
+          "kind": "iron_condor",
+          "short_strike": 210.0,
+          "long_strike": 205.0,
+          "credit": 0.84,
+          "max_loss": 415.78,
+          "collateral": 500.0,
+          "dte": 9,
+          "spread_pct": 0.0761,
+          "contracts": 1,
+          "short_symbol": "NVDA260909P00210000",
+          "long_symbol": "NVDA260909P00205000",
+          "expiry": "2026-09-09"
+        },
+        "status": "SIMULATED"
+      }
+    },
+    {
+      "ts": "2026-08-31T03:05:12.402584+00:00",
+      "symbol": "AMD",
+      "action": "hold",
+      "reason": "risk_guard : illiquide : spread bid-ask 39.6% > 15%"
     }
   ],
-  "generated_at": "2026-08-31T02:15:57.384082+00:00",
+  "generated_at": "2026-08-31T03:05:12.402637+00:00",
   "dry_run": true,
   "latest": {
-    "ts": "2026-08-31T02:15:57.384082+00:00",
+    "ts": "2026-08-31T03:05:12.402637+00:00",
     "dry_run": true,
     "equity": 100000.0,
     "cash": 100000.0,
@@ -1259,32 +1441,32 @@
       "SPY": {
         "ok": true,
         "sentiment": "unknown",
-        "note": "analyste d\u00e9sactiv\u00e9 (pas de cl\u00e9 ANTHROPIC_API_KEY)"
+        "note": "analyste d\u00e9sactiv\u00e9 (pas de cl\u00e9 FEATHERLESS_API_KEY)"
       },
       "QQQ": {
         "ok": true,
         "sentiment": "unknown",
-        "note": "analyste d\u00e9sactiv\u00e9 (pas de cl\u00e9 ANTHROPIC_API_KEY)"
+        "note": "analyste d\u00e9sactiv\u00e9 (pas de cl\u00e9 FEATHERLESS_API_KEY)"
       },
       "AAPL": {
         "ok": true,
         "sentiment": "unknown",
-        "note": "analyste d\u00e9sactiv\u00e9 (pas de cl\u00e9 ANTHROPIC_API_KEY)"
+        "note": "analyste d\u00e9sactiv\u00e9 (pas de cl\u00e9 FEATHERLESS_API_KEY)"
       },
       "MSFT": {
         "ok": true,
         "sentiment": "unknown",
-        "note": "analyste d\u00e9sactiv\u00e9 (pas de cl\u00e9 ANTHROPIC_API_KEY)"
+        "note": "analyste d\u00e9sactiv\u00e9 (pas de cl\u00e9 FEATHERLESS_API_KEY)"
       },
       "NVDA": {
         "ok": true,
         "sentiment": "unknown",
-        "note": "analyste d\u00e9sactiv\u00e9 (pas de cl\u00e9 ANTHROPIC_API_KEY)"
+        "note": "analyste d\u00e9sactiv\u00e9 (pas de cl\u00e9 FEATHERLESS_API_KEY)"
       },
       "AMD": {
         "ok": true,
         "sentiment": "unknown",
-        "note": "analyste d\u00e9sactiv\u00e9 (pas de cl\u00e9 ANTHROPIC_API_KEY)"
+        "note": "analyste d\u00e9sactiv\u00e9 (pas de cl\u00e9 FEATHERLESS_API_KEY)"
       }
     }
   }

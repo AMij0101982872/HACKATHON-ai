@@ -6,7 +6,7 @@ name: agent
 # Secrets requis (Settings > Secrets and variables > Actions) :
 #   ALPACA_API_KEY, ALPACA_SECRET_KEY   -> clés du compte paper NEUF (PA37A6KORM0G)
 # Secret optionnel :
-#   ANTHROPIC_API_KEY   -> active l'agent analyste (sinon fail-open : aucun veto)
+#   FEATHERLESS_API_KEY -> active l'agent analyste (Featherless AI, sinon fail-open)
 # Variable optionnelle :
 #   DRY_RUN = "false" pour passer aux ordres réels (défaut : "true")
 
@@ -39,7 +39,8 @@ jobs:
         env:
           ALPACA_API_KEY: ${{ secrets.ALPACA_API_KEY }}
           ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          FEATHERLESS_API_KEY: ${{ secrets.FEATHERLESS_API_KEY }}
+          FEATHERLESS_MODEL: ${{ vars.FEATHERLESS_MODEL }}
           DRY_RUN: ${{ vars.DRY_RUN || 'true' }}
         run: python -m src.run
 

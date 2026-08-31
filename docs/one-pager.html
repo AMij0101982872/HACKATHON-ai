@@ -439,9 +439,10 @@
     </div>
 
     <p>
-      <span class="agent-tag">Agent analyste (Claude).</span> À chaque passe, il récupère les
-      titres d'actualité des trois derniers jours par sous-jacent via l'API News d'Alpaca et
-      demande à Claude&nbsp;Haiku un verdict par ticker&nbsp;: <strong>favorable</strong>,
+      <span class="agent-tag">Agent analyste (Featherless&nbsp;AI).</span> À chaque passe, il
+      récupère les titres d'actualité des trois derniers jours par sous-jacent via l'API News
+      d'Alpaca et demande à un modèle open-source servi par <strong>Featherless&nbsp;AI</strong>
+      (API compatible OpenAI, Llama&nbsp;3.1) un verdict par ticker&nbsp;: <strong>favorable</strong>,
       <strong>neutre</strong> ou <strong>défavorable</strong> pour vendre de la prime cette
       semaine. Un verdict défavorable — résultats trimestriels imminents, litige, choc, M&amp;A —
       écarte le sous-jacent. Politique <em>fail-open</em>&nbsp;: sans clé ou en cas d'erreur,
@@ -557,6 +558,13 @@
           Serveur MCP Alpaca connecté dans Claude Code pour la supervision en langage naturel —
           état du compte, positions, cotations, passage d'ordre manuel — pendant le développement
           et la démo.
+        </dd>
+      </div>
+      <div>
+        <dt>Featherless AI</dt>
+        <dd>
+          Partenaire technologique&nbsp;: inférence de modèles open-source (API compatible OpenAI)
+          pour l'agent analyste — <code>src/analyst.py</code>.
         </dd>
       </div>
       <div>

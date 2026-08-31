@@ -20,8 +20,10 @@ Deux agents :
    (`src/risk_guard.py`) : kill-switch perte du jour / drawdown, plafond de
    positions, perte max par structure, exposition par sous-jacent, buffer de cash,
    fenêtre d'échéance, liquidité.
-2. **Agent analyste** (à brancher) — Claude classe l'univers et lit le sentiment
-   (`get_news`) pour autoriser ou écarter chaque sous-jacent.
+2. **Agent analyste** (`src/analyst.py`) — un modèle open-source servi par **Featherless AI**
+   (partenaire du hackathon, API compatible OpenAI) lit les actualités récentes par sous-jacent
+   (Alpaca News API) et rend un verdict `favorable` / `neutral` / `unfavorable` ; un verdict
+   défavorable écarte le sous-jacent pour la semaine. Fail-open sans `FEATHERLESS_API_KEY`.
 
 ## Arborescence
 

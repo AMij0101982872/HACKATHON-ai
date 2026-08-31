@@ -8,8 +8,9 @@
 
 **Deux agents.**
 
-**a) Agent analyste (Claude).** À chaque passe, récupère les titres d'actualité des 3 derniers
-jours par sous-jacent (Alpaca News API) et demande à Claude (Haiku) un verdict par ticker :
+**a) Agent analyste (Featherless AI).** À chaque passe, récupère les titres d'actualité des
+3 derniers jours par sous-jacent (Alpaca News API) et demande à un modèle open-source servi
+par **Featherless AI** (API compatible OpenAI, Llama&nbsp;3.1) un verdict par ticker :
 `favorable` / `neutral` / `unfavorable` pour *vendre de la prime cette semaine*. Un verdict
 `unfavorable` (résultats imminents, litige, choc, M&A) **écarte** le sous-jacent. Politique
 *fail-open* : sans clé ou en cas d'erreur, aucun veto — l'IA n'interrompt jamais le moteur.
@@ -63,6 +64,7 @@ Trois profils prédéfinis (`conservative` / `balanced` / `aggressive`) ; slippa
   **Alpaca News API** pour l'analyste.
 - **Serveur MCP Alpaca** : connecté dans Claude Code pour la **supervision en langage naturel**
   (état du compte, positions, cotations, passage d'ordres manuel) pendant le développement et la démo.
+- **Featherless AI** (partenaire) : inférence open-source (API compatible OpenAI) pour l'agent analyste.
 - **Runner CLI** (`python -m src.run`) = point d'entrée autonome, **planifié par GitHub Actions**
   toutes les 20 min en heures de marché ; publie `web/public/data/live.json`.
 - **Dashboard** : Vite + React sur **Netlify**, lit `live.json` (réel) et `history.json` (backtest).

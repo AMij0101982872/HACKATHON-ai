@@ -8,6 +8,7 @@ def test_fail_open_without_api_key():
     assert set(out) == {"SPY", "AAPL"}
     assert all(v.ok for v in out.values())
     assert all(v.sentiment == "unknown" for v in out.values())
+    assert "FEATHERLESS" in out["SPY"].note
 
 
 def test_fail_open_when_news_fetch_raises(monkeypatch):
@@ -21,7 +22,7 @@ def test_fail_open_when_news_fetch_raises(monkeypatch):
 def test_fail_open_when_llm_raises(monkeypatch):
     a = Analyst(api_key="sk-fake")
     monkeypatch.setattr(a, "_headlines", lambda symbols: {s: [] for s in symbols})
-    monkeypatch.setattr(a, "_ask_claude", lambda h: (_ for _ in ()).throw(RuntimeError("no net")))
+    monkeypatch.setattr(a, "_ask_llm", lambda h: (_ for _ in ()).throw(RuntimeError("no net")))
     out = a.assess(["SPY", "QQQ"])
     assert all(v.ok for v in out.values())
 
@@ -29,7 +30,7 @@ def test_fail_open_when_llm_raises(monkeypatch):
 def test_verdict_mapping(monkeypatch):
     a = Analyst(api_key="sk-fake")
     monkeypatch.setattr(a, "_headlines", lambda symbols: {s: [] for s in symbols})
-    monkeypatch.setattr(a, "_ask_claude", lambda h: {
+    monkeypatch.setattr(a, "_ask_llm", lambda h: {
         "SPY": {"verdict": "favorable", "why": "calme"},
         "AAPL": {"verdict": "unfavorable", "why": "résultats imminents"},
         "NVDA": {"verdict": "bizarre", "why": "?"},  # valeur inconnue -> neutral

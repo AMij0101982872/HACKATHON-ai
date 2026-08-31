@@ -1,9 +1,11 @@
-"""Agent analyste — lit les actualités récentes par sous-jacent et rend un avis (Claude).
+"""Agent analyste — lit les actualités récentes par sous-jacent et rend un avis.
 
-Le moteur déterministe reste maître : l'analyste ne fait qu'**autoriser ou écarter**
-un sous-jacent pour la semaine (`SymbolView.analyst_ok`). Politique **fail-open** :
-sans `ANTHROPIC_API_KEY`, ou en cas d'erreur réseau / news, tous les sous-jacents
-sont autorisés — l'analyste ne doit jamais bloquer le trading par accident.
+Inférence via **Featherless AI** (API compatible OpenAI, modèles open-source) — le
+partenaire technologique du hackathon. Le moteur déterministe reste maître : l'analyste
+ne fait qu'**autoriser ou écarter** un sous-jacent pour la semaine
+(`SymbolView.analyst_ok`). Politique **fail-open** : sans `FEATHERLESS_API_KEY`, ou en
+cas d'erreur réseau / news, tous les sous-jacents sont autorisés — l'analyste ne doit
+jamais bloquer le trading par accident.
 """
 from __future__ import annotations
 
@@ -15,7 +17,8 @@ from datetime import datetime, timedelta, timezone
 
 import config
 
-MODEL = "claude-haiku-4-5-20251001"
+BASE_URL = os.getenv("FEATHERLESS_BASE_URL") or "https://api.featherless.ai/v1"
+MODEL = os.getenv("FEATHERLESS_MODEL") or "meta-llama/Meta-Llama-3.1-8B-Instruct"
 
 
 @dataclass(frozen=True)
@@ -35,15 +38,17 @@ class Analyst:
         api_key: str | None = None,
         lookback_days: int = 3,
         max_headlines: int = 6,
+        model: str = MODEL,
     ) -> None:
-        self.api_key = api_key if api_key is not None else os.getenv("ANTHROPIC_API_KEY", "")
+        self.api_key = api_key if api_key is not None else os.getenv("FEATHERLESS_API_KEY", "")
         self.lookback_days = lookback_days
         self.max_headlines = max_headlines
+        self.model = model
 
     # ------------------------------------------------------------------
     def assess(self, symbols: list[str]) -> dict[str, AnalystView]:
         if not self.api_key:
-            return _all_ok(symbols, "analyste désactivé (pas de clé ANTHROPIC_API_KEY)")
+            return _all_ok(symbols, "analyste désactivé (pas de clé FEATHERLESS_API_KEY)")
 
         try:
             headlines = self._headlines(symbols)
@@ -51,7 +56,7 @@ class Analyst:
             return _all_ok(symbols, f"news indisponibles ({exc})")
 
         try:
-            verdicts = self._ask_claude(headlines)
+            verdicts = self._ask_llm(headlines)
         except Exception as exc:  # noqa: BLE001
             return _all_ok(symbols, f"analyste indisponible ({exc})")
 
@@ -87,10 +92,10 @@ class Analyst:
                 out[s] = []
         return out
 
-    def _ask_claude(self, headlines: dict[str, list[str]]) -> dict[str, dict]:
-        import anthropic
+    def _ask_llm(self, headlines: dict[str, list[str]]) -> dict[str, dict]:
+        from openai import OpenAI
 
-        client = anthropic.Anthropic(api_key=self.api_key)
+        client = OpenAI(base_url=BASE_URL, api_key=self.api_key)
         lines: list[str] = []
         for s, hs in headlines.items():
             lines.append(f"{s} :")
@@ -110,11 +115,12 @@ class Analyst:
             'Réponds UNIQUEMENT en JSON compact : '
             '{"TICKER": {"verdict": "favorable|neutral|unfavorable", "why": "6 mots max"}}'
         )
-        msg = client.messages.create(
-            model=MODEL,
-            max_tokens=700,
+        resp = client.chat.completions.create(
+            model=self.model,
             messages=[{"role": "user", "content": prompt}],
+            max_tokens=700,
+            temperature=0.2,
         )
-        text = "".join(block.text for block in msg.content if getattr(block, "type", "") == "text")
+        text = resp.choices[0].message.content or ""
         m = re.search(r"\{.*\}", text, re.S)
         return json.loads(m.group(0)) if m else {}
