@@ -89,6 +89,12 @@
       "equity": 100008.9,
       "cash": 100181.9,
       "positions": 2
+    },
+    {
+      "ts": "2026-08-31T19:16:25.220946+00:00",
+      "equity": 100001.9,
+      "cash": 100181.9,
+      "positions": 2
     }
   ],
   "decisions": [
@@ -2950,14 +2956,164 @@
       "symbol": "AMD",
       "action": "hold",
       "reason": "rapport cr\u00e9dit/largeur 12% < 15% \u2014 trop peu pay\u00e9"
+    },
+    {
+      "ts": "2026-08-31T19:16:25.093293+00:00",
+      "symbol": "SPY",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L +5$, DTE 8)"
+    },
+    {
+      "ts": "2026-08-31T19:16:25.093313+00:00",
+      "symbol": "QQQ",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L +11$, DTE 8)"
+    },
+    {
+      "ts": "2026-08-31T19:16:25.093318+00:00",
+      "symbol": "AAPL",
+      "action": "open",
+      "reason": "ouverture iron_condor AAPL (cr\u00e9dit 1.53/action)",
+      "order": {
+        "ts": "2026-08-31T19:16:25.093357+00:00",
+        "tag": "open iron_condor AAPL",
+        "reason": "ouverture iron_condor AAPL (cr\u00e9dit 1.53/action)",
+        "qty": 5,
+        "legs": [
+          {
+            "symbol": "AAPL260909P00312500",
+            "side": "sell",
+            "intent": "sell_to_open"
+          },
+          {
+            "symbol": "AAPL260909P00307500",
+            "side": "buy",
+            "intent": "buy_to_open"
+          }
+        ],
+        "limit_price": 1.53,
+        "dry_run": false,
+        "quote": {
+          "symbol": "AAPL",
+          "kind": "iron_condor",
+          "short_strike": 312.5,
+          "long_strike": 307.5,
+          "credit": 1.53,
+          "max_loss": 1736.6499999999999,
+          "collateral": 2500.0,
+          "dte": 9,
+          "spread_pct": 0.0902,
+          "contracts": 5,
+          "short_symbol": "AAPL260909P00312500",
+          "long_symbol": "AAPL260909P00307500",
+          "expiry": "2026-09-09",
+          "strategy": "credit"
+        },
+        "status": "OrderStatus.PENDING_NEW",
+        "order_id": "b50dec05-e69c-41cd-8ddc-74f437eaa038"
+      }
+    },
+    {
+      "ts": "2026-08-31T19:16:25.155096+00:00",
+      "symbol": "MSFT",
+      "action": "hold",
+      "reason": "risk_guard : illiquide : spread bid-ask 22.8% > 15%"
+    },
+    {
+      "ts": "2026-08-31T19:16:25.155113+00:00",
+      "symbol": "NVDA",
+      "action": "open",
+      "reason": "ouverture iron_condor NVDA (cr\u00e9dit 0.85/action)",
+      "order": {
+        "ts": "2026-08-31T19:16:25.155139+00:00",
+        "tag": "open iron_condor NVDA",
+        "reason": "ouverture iron_condor NVDA (cr\u00e9dit 0.85/action)",
+        "qty": 5,
+        "legs": [
+          {
+            "symbol": "NVDA260909P00212500",
+            "side": "sell",
+            "intent": "sell_to_open"
+          },
+          {
+            "symbol": "NVDA260909P00207500",
+            "side": "buy",
+            "intent": "buy_to_open"
+          }
+        ],
+        "limit_price": 0.85,
+        "dry_run": false,
+        "quote": {
+          "symbol": "NVDA",
+          "kind": "iron_condor",
+          "short_strike": 212.5,
+          "long_strike": 207.5,
+          "credit": 0.85,
+          "max_loss": 2076.4500000000003,
+          "collateral": 2500.0,
+          "dte": 9,
+          "spread_pct": 0.0694,
+          "contracts": 5,
+          "short_symbol": "NVDA260909P00212500",
+          "long_symbol": "NVDA260909P00207500",
+          "expiry": "2026-09-09",
+          "strategy": "credit"
+        },
+        "status": "OrderStatus.PENDING_NEW",
+        "order_id": "ba728de0-bbcd-49c4-a10e-984d34cff300"
+      }
+    },
+    {
+      "ts": "2026-08-31T19:16:25.183965+00:00",
+      "symbol": "AMD",
+      "action": "open",
+      "reason": "ouverture bear_call AMD (cr\u00e9dit 1.13/action)",
+      "order": {
+        "ts": "2026-08-31T19:16:25.183998+00:00",
+        "tag": "open bear_call AMD",
+        "reason": "ouverture bear_call AMD (cr\u00e9dit 1.13/action)",
+        "qty": 5,
+        "legs": [
+          {
+            "symbol": "AMD260909C00490000",
+            "side": "sell",
+            "intent": "sell_to_open"
+          },
+          {
+            "symbol": "AMD260909C00495000",
+            "side": "buy",
+            "intent": "buy_to_open"
+          }
+        ],
+        "limit_price": 1.13,
+        "dry_run": false,
+        "quote": {
+          "symbol": "AMD",
+          "kind": "bear_call",
+          "short_strike": 490.0,
+          "long_strike": 495.0,
+          "credit": 1.13,
+          "max_loss": 1936.1000000000001,
+          "collateral": 2500.0,
+          "dte": 9,
+          "spread_pct": 0.0618,
+          "contracts": 5,
+          "short_symbol": "AMD260909C00490000",
+          "long_symbol": "AMD260909C00495000",
+          "expiry": "2026-09-09",
+          "strategy": "credit"
+        },
+        "status": "OrderStatus.PENDING_NEW",
+        "order_id": "0cf75b55-49ce-48b3-9066-d05335e001c4"
+      }
     }
   ],
-  "generated_at": "2026-08-31T18:05:22.622479+00:00",
-  "dry_run": true,
+  "generated_at": "2026-08-31T19:16:25.220946+00:00",
+  "dry_run": false,
   "latest": {
-    "ts": "2026-08-31T18:05:22.622479+00:00",
-    "dry_run": true,
-    "equity": 100008.9,
+    "ts": "2026-08-31T19:16:25.220946+00:00",
+    "dry_run": false,
+    "equity": 100001.9,
     "cash": 100181.9,
     "buying_power": 99181.9,
     "start_of_day_equity": 100000.0,
@@ -2968,7 +3124,7 @@
         "symbol": "QQQ",
         "kind": "bull_put",
         "entry_credit": 0.98,
-        "current_value": 0.86,
+        "current_value": 0.87,
         "unrealized_pl": 11.5,
         "dte": 8,
         "contracts": 1
@@ -2977,8 +3133,8 @@
         "symbol": "SPY",
         "kind": "bull_put",
         "entry_credit": 0.91,
-        "current_value": 0.79,
-        "unrealized_pl": 12.0,
+        "current_value": 0.86,
+        "unrealized_pl": 5.5,
         "dte": 8,
         "contracts": 1
       }
