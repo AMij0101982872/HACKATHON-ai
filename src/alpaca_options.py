@@ -70,6 +70,7 @@ class AlpacaOptionsBroker:
             buying_power=bp,
             start_of_day_equity=sod,
             high_water_mark=hwm,
+            last_equity=float(getattr(a, "last_equity", 0.0) or 0.0),
         )
 
     def open_spreads(self) -> list[SpreadPosition]:
@@ -102,6 +103,7 @@ class AlpacaOptionsBroker:
             else:
                 cur = max((s_mid - l_mid), 0.0)   # coût de rachat du credit spread
             entry = self._entry_credit(short.occ, long.occ)
+            broker_pl = sum(l.unrealized_pl for l in grp) or None  # somme des jambes = P&L Alpaca
             out.append(
                 SpreadPosition(
                     symbol=under,
@@ -111,6 +113,7 @@ class AlpacaOptionsBroker:
                     dte=max((expiry - date.today()).days, 0),
                     contracts=contracts,
                     strategy="debit" if is_debit else "credit",
+                    broker_pl=broker_pl,
                 )
             )
         return out
@@ -304,8 +307,12 @@ class AlpacaOptionsBroker:
                 continue
             under, expiry, opt_type, strike = info
             qty = float(p.qty)
-            legs.append(_LegView(occ=occ, symbol_underlying=under, expiry=expiry,
-                                 opt_type=opt_type, strike=strike, qty=qty))
+            legs.append(_LegView(
+                occ=occ, symbol_underlying=under, expiry=expiry,
+                opt_type=opt_type, strike=strike, qty=qty,
+                unrealized_pl=float(getattr(p, "unrealized_pl", 0.0) or 0.0),
+                market_value=float(getattr(p, "market_value", 0.0) or 0.0),
+            ))
         return legs
 
     def _contracts_in_window(self, underlying: str, opt_type: str, dte: int):
@@ -388,6 +395,8 @@ class _LegView:
     opt_type: str
     strike: float
     qty: float
+    unrealized_pl: float = 0.0   # P&L latent réel de la jambe ($, Alpaca)
+    market_value: float = 0.0    # valeur de marché réelle de la jambe ($, Alpaca)
 
 
 def _parse_occ(occ: str):

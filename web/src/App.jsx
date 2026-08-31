@@ -54,8 +54,11 @@ export default function App() {
 
   const latest = live?.latest;
   const equity = latest?.equity;
-  const pnl = equity != null ? equity - START_EQUITY : null;
+  // Valeurs Alpaca (via le snapshot) — prioritaires pour coller au dashboard Alpaca
+  const pnl = latest?.total_pl != null ? latest.total_pl : (equity != null ? equity - START_EQUITY : null);
   const pnlPct = pnl != null ? (pnl / START_EQUITY) * 100 : null;
+  const dayPl = latest?.day_pl ?? null;
+  const dayPlPct = dayPl != null && latest?.last_equity ? (dayPl / latest.last_equity) * 100 : null;
 
   const liveCurve = useMemo(
     () =>
@@ -91,8 +94,9 @@ export default function App() {
       </div>
 
       <div className="grid kpis">
-        <Kpi label="Equity (live)" value={money(equity)} />
-        <Kpi label="P&L depuis 100k$" value={pnl == null ? "—" : `${pnl >= 0 ? "+" : ""}${money(pnl)}`} tone={cls(pnl || 0)} />
+        <Kpi label="Equity (live · Alpaca)" value={money(equity)} />
+        <Kpi label="P&L total" value={pnl == null ? "—" : `${pnl >= 0 ? "+" : ""}${money(pnl)}`} tone={cls(pnl || 0)} />
+        <Kpi label="P&L du jour" value={dayPl == null ? "—" : `${dayPl >= 0 ? "+" : ""}${money(dayPl)}${dayPlPct != null ? ` (${dayPlPct >= 0 ? "+" : ""}${dayPlPct.toFixed(2)} %)` : ""}`} tone={cls(dayPl || 0)} />
         <Kpi label="P&L %" value={pct(pnlPct)} tone={cls(pnlPct || 0)} />
         <Kpi label="Positions ouvertes" value={latest?.open_positions ?? "—"} />
         <Kpi label="Backtest 17 mois" value={pct(m.total_return_pct)} tone={cls(m.total_return_pct || 0)} />
@@ -155,19 +159,20 @@ export default function App() {
               ))}
           </div>
 
-          <h2 style={{ marginTop: 20 }}>Positions ouvertes</h2>
+          <h2 style={{ marginTop: 20 }}>Positions ouvertes <span className="hint">· P&amp;L latent : Alpaca</span></h2>
           {positions.length === 0 ? (
             <div className="flat">aucune</div>
           ) : (
             <table>
               <thead>
-                <tr><th>Sous-jacent</th><th>Structure</th><th className="num">Crédit</th><th className="num">P&L latent</th><th className="num">DTE</th></tr>
+                <tr><th>Sous-jacent</th><th>Structure</th><th className="num">Contrats</th><th className="num">Crédit/action</th><th className="num">P&L latent</th><th className="num">DTE</th></tr>
               </thead>
               <tbody>
                 {positions.map((p, i) => (
                   <tr key={i}>
                     <td>{p.symbol}</td>
                     <td>{p.kind}</td>
+                    <td className="num">{p.contracts ?? 1}</td>
                     <td className="num">${p.entry_credit}</td>
                     <td className={`num ${cls(p.unrealized_pl)}`}>{p.unrealized_pl >= 0 ? "+" : ""}${p.unrealized_pl}</td>
                     <td className="num">{p.dte}</td>

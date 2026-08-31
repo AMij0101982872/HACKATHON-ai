@@ -130,6 +130,7 @@ def run_once() -> dict:
             print(f"  hold  {d.symbol:5} {d.reason}")
         events.append(line)
 
+    day_pl = round(acct.equity - acct.last_equity, 2) if acct.last_equity else None
     snapshot = {
         "ts": datetime.now(timezone.utc).isoformat(),
         "dry_run": config.DRY_RUN,
@@ -138,6 +139,9 @@ def run_once() -> dict:
         "buying_power": round(acct.buying_power, 2),
         "start_of_day_equity": round(acct.start_of_day_equity, 2),
         "high_water_mark": round(acct.high_water_mark, 2),
+        "last_equity": round(acct.last_equity, 2),
+        "day_pl": day_pl,
+        "total_pl": round(acct.equity - 100_000.0, 2),
         "open_positions": len(positions),
         "positions": [
             {

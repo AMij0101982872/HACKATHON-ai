@@ -27,6 +27,7 @@ class AccountSnapshot:
     buying_power: float
     start_of_day_equity: float
     high_water_mark: float
+    last_equity: float = 0.0   # equity de clôture de la veille (Alpaca) ; 0 si indisponible
 
 
 @dataclass(frozen=True)
@@ -40,14 +41,19 @@ class SpreadPosition:
     dte: int
     contracts: int = 1
     strategy: Strategy = "credit"
+    broker_pl: float | None = None  # P&L latent réel fourni par le broker ($) ; prioritaire sur le calcul
 
     @property
     def unrealized_pl(self) -> float:
         """P&L latent en dollars.
 
+        Utilise la valeur réelle du broker (`broker_pl`) si disponible — c'est elle
+        qui doit coller au dashboard Alpaca. Sinon, reconstruction Black-Scholes :
         - credit : (crédit reçu − coût de rachat) × 100 × contrats
         - debit  : (valeur de revente − débit payé) × 100 × contrats
         """
+        if self.broker_pl is not None:
+            return self.broker_pl
         if self.strategy == "debit":
             return (self.current_value - self.entry_credit) * 100.0 * self.contracts
         return (self.entry_credit - self.current_value) * 100.0 * self.contracts
