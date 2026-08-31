@@ -1,0 +1,591 @@
+<title>Regime Options Agent</title>
+<meta name="description" content="One-page technical brief: AI logic, deterministic risk checkpoints, and Alpaca infrastructure for an autonomous options credit-spread agent." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+/>
+
+<style>
+  :root {
+    --ground: #f6f7f9;
+    --surface: #ffffff;
+    --ink: #1b2029;
+    --ink-soft: #444c5b;
+    --muted: #7d8798;
+    --hair: #e0e4ea;
+    --hair-strong: #c9cfd9;
+    --accent: #1f8f7c;      /* ledger green-teal, used with restraint */
+    --accent-ink: #146457;
+    --caution: #b3820f;     /* semantic: risk markers, distinct from accent */
+    --ground-tint: #eef1f0;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0c0f15;
+      --surface: #11151d;
+      --ink: #e7ebf2;
+      --ink-soft: #b3bcc9;
+      --muted: #808b9a;
+      --hair: #212836;
+      --hair-strong: #2f3849;
+      --accent: #3fb8a0;
+      --accent-ink: #6ad0bb;
+      --caution: #d8ab3a;
+      --ground-tint: #151a23;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground: #0c0f15;
+    --surface: #11151d;
+    --ink: #e7ebf2;
+    --ink-soft: #b3bcc9;
+    --muted: #808b9a;
+    --hair: #212836;
+    --hair-strong: #2f3849;
+    --accent: #3fb8a0;
+    --accent-ink: #6ad0bb;
+    --caution: #d8ab3a;
+    --ground-tint: #151a23;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 14px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .sheet {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 56px 40px 72px;
+  }
+
+  /* ---- masthead ---- */
+  .masthead {
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 18px;
+  }
+
+  .kicker {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    margin: 0 0 10px;
+  }
+
+  h1 {
+    font-size: 31px;
+    line-height: 1.12;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  .lede {
+    margin: 10px 0 0;
+    font-size: 15px;
+    color: var(--ink-soft);
+    max-width: 62ch;
+  }
+
+  .spec {
+    margin-top: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 14px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11.5px;
+  }
+
+  .spec span {
+    display: inline-flex;
+    gap: 7px;
+    align-items: baseline;
+    padding: 4px 10px;
+    border: 1px solid var(--hair-strong);
+    border-radius: 3px;
+    background: var(--surface);
+  }
+
+  .spec b {
+    color: var(--muted);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 10px;
+  }
+
+  .spec i {
+    font-style: normal;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- sections ---- */
+  section {
+    margin-top: 34px;
+  }
+
+  .s-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .s-num {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    flex: none;
+  }
+
+  .s-head h2 {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    margin: 0;
+  }
+
+  .s-head .rule {
+    flex: 1;
+    height: 1px;
+    background: var(--hair);
+    transform: translateY(-3px);
+  }
+
+  p {
+    margin: 0 0 11px;
+    max-width: 66ch;
+  }
+
+  .agent-tag {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent-ink);
+  }
+
+  strong {
+    font-weight: 600;
+  }
+
+  /* ---- regime table ---- */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 6px 0 12px;
+    font-size: 13px;
+  }
+
+  caption {
+    text-align: left;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+
+  th,
+  td {
+    text-align: left;
+    padding: 7px 10px;
+    border-bottom: 1px solid var(--hair);
+  }
+
+  thead th {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom-color: var(--hair-strong);
+  }
+
+  tbody td:first-child {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .mono {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .params {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    background: var(--ground-tint);
+    border-left: 2px solid var(--accent);
+    padding: 9px 12px;
+    margin: 4px 0 0;
+  }
+
+  /* ---- risk checklist ---- */
+  .checks {
+    list-style: none;
+    counter-reset: chk;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px 26px;
+  }
+
+  .checks li {
+    counter-increment: chk;
+    position: relative;
+    padding-left: 30px;
+    font-size: 12.5px;
+    line-height: 1.5;
+  }
+
+  .checks li::before {
+    content: counter(chk, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 0.1em;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--caution);
+  }
+
+  .checks b {
+    font-weight: 600;
+  }
+
+  .checks .t {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-soft);
+  }
+
+  .note {
+    margin-top: 12px;
+    font-size: 12px;
+    color: var(--muted);
+    max-width: 68ch;
+  }
+
+  /* ---- infra rows ---- */
+  .infra {
+    display: grid;
+    gap: 0;
+  }
+
+  .infra > div {
+    display: grid;
+    grid-template-columns: 128px 1fr;
+    gap: 16px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--hair);
+    font-size: 12.5px;
+  }
+
+  .infra > div:last-child {
+    border-bottom: none;
+  }
+
+  .infra dt {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--accent-ink);
+    padding-top: 2px;
+  }
+
+  .infra dd {
+    margin: 0;
+    color: var(--ink-soft);
+  }
+
+  .infra code {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11.5px;
+    background: var(--ground-tint);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--ink);
+  }
+
+  footer {
+    margin-top: 40px;
+    padding-top: 14px;
+    border-top: 1px solid var(--hair-strong);
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  a {
+    color: var(--accent-ink);
+    text-decoration: none;
+    border-bottom: 1px solid var(--hair-strong);
+  }
+
+  @media (max-width: 720px) {
+    .sheet {
+      padding: 40px 22px 56px;
+    }
+    .checks,
+    .infra > div {
+      grid-template-columns: 1fr;
+    }
+    .infra > div {
+      gap: 3px;
+    }
+  }
+
+  @media print {
+    :root {
+      --ground: #ffffff;
+      --surface: #ffffff;
+      --ground-tint: #f1f1f1;
+    }
+    body {
+      font-size: 9.5pt;
+      line-height: 1.42;
+    }
+    .sheet {
+      max-width: none;
+      padding: 0;
+    }
+    section {
+      margin-top: 15pt;
+      break-inside: avoid;
+    }
+    h1 {
+      font-size: 19pt;
+    }
+    .lede {
+      font-size: 10pt;
+    }
+    .checks {
+      gap: 4pt 22pt;
+    }
+    a {
+      border: none;
+      color: inherit;
+    }
+    @page {
+      size: A4;
+      margin: 13mm 15mm;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+</style>
+
+<div class="sheet">
+  <header class="masthead">
+    <p class="kicker">Alpaca AI Trading Agents Hackathon · lablab.ai × Alpaca</p>
+    <h1>Agent d'options à crédit piloté par le régime de marché</h1>
+    <p class="lede">
+      Agent de trading autonome sur compte paper Alpaca. Toutes les positions sont des
+      spreads verticaux d'options, à risque défini et borné par construction.
+    </p>
+    <div class="spec">
+      <span><b>Compte paper</b><i>PA37A6KORM0G</i></span>
+      <span><b>Capital</b><i>$100,000</i></span>
+      <span><b>Univers</b><i>SPY QQQ AAPL MSFT NVDA AMD</i></span>
+      <span><b>Repo</b><i>ALPACA_AI_HACKHATONS · ivan-jr</i></span>
+    </div>
+  </header>
+
+  <section>
+    <div class="s-head">
+      <span class="s-num">01</span>
+      <h2>Logique d'IA</h2>
+      <span class="rule"></span>
+    </div>
+
+    <p>
+      <span class="agent-tag">Agent analyste (Claude).</span> À chaque passe, il récupère les
+      titres d'actualité des trois derniers jours par sous-jacent via l'API News d'Alpaca et
+      demande à Claude&nbsp;Haiku un verdict par ticker&nbsp;: <strong>favorable</strong>,
+      <strong>neutre</strong> ou <strong>défavorable</strong> pour vendre de la prime cette
+      semaine. Un verdict défavorable — résultats trimestriels imminents, litige, choc, M&amp;A —
+      écarte le sous-jacent. Politique <em>fail-open</em>&nbsp;: sans clé ou en cas d'erreur,
+      aucun veto n'est appliqué — l'IA n'interrompt jamais le moteur par accident.
+    </p>
+
+    <p>
+      <span class="agent-tag">Moteur déterministe.</span> Pour chaque sous-jacent autorisé, il
+      calcule le <strong>régime de marché</strong> — écart relatif entre moyenne mobile 10 jours
+      et 30 jours, comparé à un seuil de&nbsp;3&nbsp;% — puis en déduit la structure&nbsp;:
+    </p>
+
+    <table>
+      <caption>Régime → structure ouverte</caption>
+      <thead>
+        <tr>
+          <th>Régime</th>
+          <th>Structure d'options</th>
+          <th>Thèse</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Haussier</td>
+          <td>Bull put spread</td>
+          <td>encaisser la prime tant que le sous-jacent ne s'effondre pas</td>
+        </tr>
+        <tr>
+          <td>Baissier</td>
+          <td>Bear call spread</td>
+          <td>encaisser la prime tant qu'il ne s'envole pas</td>
+        </tr>
+        <tr>
+          <td>Neutre</td>
+          <td>Iron condor</td>
+          <td>encaisser la prime tant qu'il reste dans un couloir</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="params">
+      strike jambe courte ≈ delta 0.30 (Black-Scholes, vol réalisée) · largeur $5 · échéance ≈ 7 j<br />
+      prise de profit à 50 % du crédit · stop à 2× le crédit · clôture à DTE ≤ 1<br />
+      spread directionnel clôturé si le régime bascule · iron condor laissé courir (anti-whipsaw)
+    </p>
+
+    <p class="note">
+      Backtest de référence (6 sous-jacents, 17 mois, primes modélisées Black-Scholes)&nbsp;:
+      rendement <span class="mono">+2,1 %</span>, drawdown max <span class="mono">−7,2 %</span>,
+      Sharpe <span class="mono">0,36</span>, <span class="mono">569</span> trades,
+      <span class="mono">75,7 %</span> gagnants. À lire comme un profil de comportement&nbsp;: le
+      modèle sous-estime la prime réelle (vol implicite &gt; vol réalisée) et la fenêtre de
+      jugement est courte.
+    </p>
+  </section>
+
+  <section>
+    <div class="s-head">
+      <span class="s-num">02</span>
+      <h2>Points de contrôle des risques</h2>
+      <span class="rule"></span>
+    </div>
+
+    <p>
+      Module <code class="mono">risk_guard.py</code> — <strong>déterministe, aucun LLM dans le
+      chemin d'un ordre</strong>. Toute ouverture franchit la batterie complète&nbsp;; le premier
+      contrôle qui échoue bloque l'ordre et fournit la raison, journalisée.
+    </p>
+
+    <ol class="checks">
+      <li><b>Compte paper obligatoire</b> — refus sec sinon.</li>
+      <li><b>Kill-switch perte du jour</b> <span class="t">−15 %</span> vs equity d'ouverture — bloque les ouvertures, autorise les clôtures.</li>
+      <li><b>Kill-switch drawdown</b> <span class="t">−30 %</span> vs high-water mark.</li>
+      <li><b>Risque défini uniquement</b> — aucune jambe nue, jamais.</li>
+      <li><b>Plafond de positions ouvertes</b> <span class="t">15</span>.</li>
+      <li><b>Perte maximale par structure</b> <span class="t">$3 000</span>.</li>
+      <li><b>Exposition maximale par sous-jacent</b> <span class="t">35 %</span> de l'equity.</li>
+      <li><b>Buying power suffisant</b> pour le collatéral.</li>
+      <li><b>Buffer de cash plancher</b> <span class="t">2 %</span> après collatéral.</li>
+      <li><b>Fenêtre d'échéance</b> <span class="t">DTE 2–60</span>.</li>
+      <li><b>Liquidité</b> — spread bid-ask de la jambe courte <span class="t">≤ 15 %</span>.</li>
+    </ol>
+
+    <p class="note">
+      Trois profils prédéfinis — <span class="mono">conservative</span> /
+      <span class="mono">balanced</span> / <span class="mono">aggressive</span> (valeurs
+      ci-dessus). Slippage modélisé à <span class="mono">3 %</span> à l'entrée comme à la sortie.
+      Le pire cas d'un trade est borné par construction&nbsp;: perte = largeur − crédit.
+    </p>
+  </section>
+
+  <section>
+    <div class="s-head">
+      <span class="s-num">03</span>
+      <h2>Infrastructure Alpaca</h2>
+      <span class="rule"></span>
+    </div>
+
+    <div class="infra">
+      <div>
+        <dt>Trading API</dt>
+        <dd>
+          SDK <code>alpaca-py</code> (paper)&nbsp;: compte &amp; positions,
+          <code>get_option_contracts</code> (chaîne filtrée type / échéance / strike), cotations
+          <code>OptionHistoricalDataClient</code>, <strong>ordres multi-jambes</strong>
+          <code>OrderClass.MLEG</code> + <code>OptionLegRequest</code> avec
+          <code>PositionIntent</code>, bougies journalières (régime + vol réalisée).
+        </dd>
+      </div>
+      <div>
+        <dt>Serveur MCP</dt>
+        <dd>
+          Serveur MCP Alpaca connecté dans Claude Code pour la supervision en langage naturel —
+          état du compte, positions, cotations, passage d'ordre manuel — pendant le développement
+          et la démo.
+        </dd>
+      </div>
+      <div>
+        <dt>Runner CLI</dt>
+        <dd>
+          <code>python -m src.run</code> = point d'entrée autonome, planifié par GitHub Actions
+          toutes les 20 min en heures de marché&nbsp;; publie
+          <code>web/public/data/live.json</code>.
+        </dd>
+      </div>
+      <div>
+        <dt>Dashboard</dt>
+        <dd>
+          Vite + React sur Netlify&nbsp;: courbe d'equity live, régimes, positions ouvertes,
+          journal de décisions «&nbsp;pourquoi&nbsp;», trades du backtest.
+        </dd>
+      </div>
+      <div>
+        <dt>Tests</dt>
+        <dd>
+          <span class="mono">66</span> tests <code>pytest</code> — garde-fou, pricing, machine à
+          états, scénarios d'agent, backtest, analyste.
+        </dd>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>github.com/gatsoundoujuniior-netizen/ALPACA_AI_HACKHATONS</span>
+    <span>branche ivan-jr · compte paper · données réelles, capital virtuel</span>
+  </footer>
+</div>
