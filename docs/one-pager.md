@@ -22,10 +22,10 @@ par **Featherless AI** (API compatible OpenAI, Llama&nbsp;3.1) un verdict par ti
 |---|---|
 | haussier | **bull put spread** |
 | baissier | **bear call spread** |
-| neutre | **iron condor** (côté put) |
+| neutre | **iron condor** (4 jambes : put + call) |
 
 Sélection des strikes : jambe courte à **delta ≈ 0,30** (Black-Scholes sur volatilité réalisée),
-largeur **5 $**, échéance **~7 jours**. Gestion : prise de profit à **50 %** du crédit encaissé,
+largeur **5 $**, échéance **~7 jours**. Gestion : prise de profit à **40 %** du crédit encaissé,
 stop à **2×** le crédit, clôture à **DTE ≤ 1** ; un spread directionnel se clôture aussi si le
 régime bascule à l'opposé ; l'iron condor est laissé courir vers sa cible (évite le *whipsaw*).
 

@@ -77,6 +77,17 @@ class SpreadQuote:
     long_symbol: str = ""   # symbole OCC de la jambe longue (broker réel)
     expiry: str = ""        # date d'échéance ISO (broker réel)
     strategy: Strategy = "credit"  # "debit" -> `credit` porte le débit payé (>0)
+    # Iron condor : seconde aile (call). Vide pour une verticale simple.
+    call_short_strike: float = 0.0
+    call_long_strike: float = 0.0
+    call_short_symbol: str = ""
+    call_long_symbol: str = ""
+    put_credit: float = 0.0    # crédit de l'aile put (condor)
+    call_credit: float = 0.0   # crédit de l'aile call (condor)
+
+    @property
+    def is_condor(self) -> bool:
+        return self.kind == "iron_condor" and self.call_short_strike > 0
 
     @property
     def width(self) -> float:

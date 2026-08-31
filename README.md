@@ -14,8 +14,8 @@ Deux agents :
    |--------|-----------|
    | haussier | bull put spread |
    | baissier | bear call spread |
-   | neutre | iron condor (côté put) |
-   Gestion : prise de profit à 50 % du crédit, stop à 2× le crédit, clôture à
+   | neutre | iron condor (4 jambes : put + call) |
+   Gestion : prise de profit à 40 % du crédit, stop à 2× le crédit, clôture à
    l'approche de l'échéance. **Poche directionnelle** (`src/directional_pocket.py`) : sur
    régime franchement marqué + feu vert analyste, achat d'un debit spread (call/put,
    budget ≤ 15 % de l'equity, perte plafonnée à la prime). Tout ordre passe par un **garde-fou déterministe**
@@ -78,7 +78,7 @@ réels sur le compte paper.
 
 | Variable | Rôle | Défaut |
 |----------|------|--------|
-| `OPTION_UNIVERSE` | sous-jacents suivis | SPY,QQQ,AAPL,MSFT,NVDA,AMD |
+| `OPTION_UNIVERSE` | sous-jacents suivis | SPY,QQQ,IWM,AAPL,MSFT,NVDA,AMD,META,GOOGL,AMZN,TSLA |
 | `TARGET_DELTA` | delta de la jambe courte | 0.30 |
 | `SPREAD_WIDTH` | écart entre strikes ($) | 5 |
 | `DTE_TARGET` | jours à l'échéance à l'ouverture | 7 |

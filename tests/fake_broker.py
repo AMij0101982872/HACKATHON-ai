@@ -60,18 +60,31 @@ class FakeBroker(Broker):
         spot = self.spot[symbol]
         t = dte / 365.0
 
-        if kind == "bull_put":
-            short = strike_for_delta(spot, target_delta, t, self.vol, "put")
-            spread = VerticalSpread("put", short_strike=short, long_strike=short - width)
-        elif kind == "bear_call":
-            short = strike_for_delta(spot, target_delta, t, self.vol, "call")
-            spread = VerticalSpread("call", short_strike=short, long_strike=short + width)
-        else:  # iron_condor -> on cote la jambe put pour dimensionner (approché)
-            short = strike_for_delta(spot, target_delta, t, self.vol, "put")
-            spread = VerticalSpread("put", short_strike=short, long_strike=short - width)
+        def _leg(otype: str, sign: int):
+            short = strike_for_delta(spot, target_delta, t, self.vol, otype)
+            sp = VerticalSpread(otype, short_strike=short, long_strike=short + sign * width)
+            c = apply_slippage(price_vertical_credit(sp, spot=spot, t=t, vol=self.vol),
+                               self.liquidity_spread_pct)
+            return sp, c
 
-        mid = price_vertical_credit(spread, spot=spot, t=t, vol=self.vol)
-        credit = apply_slippage(mid, self.liquidity_spread_pct)
+        if kind == "bull_put":
+            spread, credit = _leg("put", -1)
+        elif kind == "bear_call":
+            spread, credit = _leg("call", +1)
+        else:  # iron_condor : vraies deux ailes
+            put_sp, put_c = _leg("put", -1)
+            call_sp, call_c = _leg("call", +1)
+            total = put_c + call_c
+            return SpreadQuote(
+                symbol=symbol, kind="iron_condor",
+                short_strike=put_sp.short_strike, long_strike=put_sp.long_strike,
+                call_short_strike=call_sp.short_strike, call_long_strike=call_sp.long_strike,
+                credit=total, put_credit=put_c, call_credit=call_c,
+                max_loss=max(width * 100.0 - total * 100.0, 0.0),
+                collateral=width * 100.0,
+                dte=dte, spread_pct=self.liquidity_spread_pct,
+            )
+
         return SpreadQuote(
             symbol=symbol,
             kind=kind,

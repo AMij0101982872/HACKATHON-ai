@@ -73,67 +73,76 @@ class AlpacaOptionsBroker:
             last_equity=float(getattr(a, "last_equity", 0.0) or 0.0),
         )
 
+    def _classify_wing(self, grp: list) -> dict | None:
+        """Depuis 2 jambes d'une aile -> dict {kind, entry, cur, contracts, strategy, pl, legs}."""
+        short = next((x for x in grp if x.qty < 0), None)
+        long = next((x for x in grp if x.qty > 0), None)
+        if not short or not long:
+            return None
+        opt_type = short.opt_type
+        if opt_type == "put":
+            is_debit = long.strike > short.strike
+            kind = "put_debit" if is_debit else "bull_put"
+        else:
+            is_debit = long.strike < short.strike
+            kind = "call_debit" if is_debit else "bear_call"
+        s_mid, l_mid = self._mid(short.occ), self._mid(long.occ)
+        cur = max((l_mid - s_mid) if is_debit else (s_mid - l_mid), 0.0)
+        entry = self._entry_credit(short.occ, long.occ)
+        return {
+            "kind": kind, "cur": cur,
+            "entry": entry if entry is not None else cur,
+            "contracts": max(int(min(abs(short.qty), abs(long.qty))), 1),
+            "strategy": "debit" if is_debit else "credit",
+            "pl": sum(l.unrealized_pl for l in grp),
+        }
+
     def open_spreads(self) -> list[SpreadPosition]:
-        legs = self._option_legs()
-        by_under: dict[tuple[str, date, str], list[_Leg]] = {}
-        for lg in legs:
-            by_under.setdefault((lg.symbol_underlying, lg.expiry, lg.opt_type), []).append(lg)
+        by_ue: dict[tuple[str, date], list] = {}
+        for lg in self._option_legs():
+            by_ue.setdefault((lg.symbol_underlying, lg.expiry), []).append(lg)
 
         out: list[SpreadPosition] = []
-        for (under, expiry, opt_type), grp in by_under.items():
-            short = next((x for x in grp if x.qty < 0), None)
-            long = next((x for x in grp if x.qty > 0), None)
-            if not short or not long:
+        for (under, expiry), grp in by_ue.items():
+            dte = max((expiry - date.today()).days, 0)
+            puts = [l for l in grp if l.opt_type == "put"]
+            calls = [l for l in grp if l.opt_type == "call"]
+            pw = self._classify_wing(puts) if len(puts) >= 2 else None
+            cw = self._classify_wing(calls) if len(calls) >= 2 else None
+
+            # iron condor : une aile put crédit + une aile call crédit sur le même sous-jacent/échéance
+            if pw and cw and pw["strategy"] == "credit" and cw["strategy"] == "credit":
+                out.append(SpreadPosition(
+                    symbol=under, kind="iron_condor",
+                    entry_credit=pw["entry"] + cw["entry"],
+                    current_value=pw["cur"] + cw["cur"],
+                    dte=dte, contracts=min(pw["contracts"], cw["contracts"]),
+                    strategy="credit", broker_pl=(pw["pl"] + cw["pl"]) or None,
+                ))
                 continue
-            contracts = max(int(min(abs(short.qty), abs(long.qty))), 1)
-
-            # Débit vs crédit d'après l'ordre des strikes :
-            #   put  : jambe longue plus haute  -> put debit  ; sinon bull put (crédit)
-            #   call : jambe longue plus basse  -> call debit  ; sinon bear call (crédit)
-            if opt_type == "put":
-                is_debit = long.strike > short.strike
-                kind: SpreadKind = "put_debit" if is_debit else "bull_put"
-            else:
-                is_debit = long.strike < short.strike
-                kind = "call_debit" if is_debit else "bear_call"
-
-            s_mid, l_mid = self._mid(short.occ), self._mid(long.occ)
-            if is_debit:
-                cur = max((l_mid - s_mid), 0.0)   # valeur de revente du debit spread
-            else:
-                cur = max((s_mid - l_mid), 0.0)   # coût de rachat du credit spread
-            entry = self._entry_credit(short.occ, long.occ)
-            broker_pl = sum(l.unrealized_pl for l in grp) or None  # somme des jambes = P&L Alpaca
-            out.append(
-                SpreadPosition(
-                    symbol=under,
-                    kind=kind,
-                    entry_credit=entry if entry is not None else cur,
-                    current_value=cur,
-                    dte=max((expiry - date.today()).days, 0),
-                    contracts=contracts,
-                    strategy="debit" if is_debit else "credit",
-                    broker_pl=broker_pl,
-                )
-            )
+            for w in (pw, cw):
+                if w:
+                    out.append(SpreadPosition(
+                        symbol=under, kind=w["kind"],
+                        entry_credit=w["entry"], current_value=w["cur"],
+                        dte=dte, contracts=w["contracts"],
+                        strategy=w["strategy"], broker_pl=w["pl"] or None,
+                    ))
         return out
 
-    def quote_credit_spread(
-        self, symbol: str, kind: SpreadKind, target_delta: float, width: float, dte: int
-    ) -> SpreadQuote | None:
-        spot = self._spot(symbol)
-        vol = self._vol(symbol)
+    def _vertical_leg(self, symbol: str, opt_type: str, target_delta: float, width: float, dte: int):
+        """Cote une verticale à crédit sur une aile. Renvoie un dict ou None."""
+        spot, vol = self._spot(symbol), self._vol(symbol)
         if not spot or not vol:
             return None
-        opt_type = _OPT_TYPE[kind]
-
         contracts = self._contracts_in_window(symbol, opt_type, dte)
         if not contracts:
             return None
         expiry = min(contracts, key=lambda c: abs((c["expiry"] - date.today()).days - dte))["expiry"]
         strikes = sorted(c["strike"] for c in contracts if c["expiry"] == expiry)
         by_strike = {c["strike"]: c for c in contracts if c["expiry"] == expiry}
-
+        if not strikes:
+            return None
         t = max((expiry - date.today()).days, 1) / 365.0
         wanted = strike_for_delta(spot, target_delta, t, vol, opt_type)
         short_k = min(strikes, key=lambda k: abs(k - wanted))
@@ -142,34 +151,57 @@ class AlpacaOptionsBroker:
         if not far:
             return None
         long_k = min(far, key=lambda k: abs(k - long_target))
-
-        short_c, long_c = by_strike[short_k], by_strike[long_k]
-        sq = self._quote(short_c["occ"])
-        lq = self._quote(long_c["occ"])
+        sq, lq = self._quote(by_strike[short_k]["occ"]), self._quote(by_strike[long_k]["occ"])
         if not sq or not lq:
             return None
-        s_bid, s_ask = sq
-        l_bid, l_ask = lq
-        s_mid, l_mid = (s_bid + s_ask) / 2, (l_bid + l_ask) / 2
+        s_mid, l_mid = (sq[0] + sq[1]) / 2, (lq[0] + lq[1]) / 2
         credit = (s_mid - l_mid) * (1.0 - self.slippage_pct / 2.0)
-        if credit <= 0:
-            return None
+        spread_pct = (sq[1] - sq[0]) / s_mid if s_mid > 0 else 1.0
+        return {
+            "short_occ": by_strike[short_k]["occ"], "long_occ": by_strike[long_k]["occ"],
+            "short_k": short_k, "long_k": long_k, "credit": credit,
+            "spread_pct": spread_pct, "expiry": expiry,
+        }
 
-        real_width = abs(short_k - long_k)
-        spread_pct = (s_ask - s_bid) / s_mid if s_mid > 0 else 1.0
+    def quote_credit_spread(
+        self, symbol: str, kind: SpreadKind, target_delta: float, width: float, dte: int
+    ) -> SpreadQuote | None:
+        if kind == "iron_condor":
+            put = self._vertical_leg(symbol, "put", target_delta, width, dte)
+            call = self._vertical_leg(symbol, "call", target_delta, width, dte)
+            if not put or not call or put["credit"] <= 0 or call["credit"] <= 0:
+                return None
+            total = put["credit"] + call["credit"]
+            rw = max(abs(put["short_k"] - put["long_k"]), abs(call["short_k"] - call["long_k"]))
+            return SpreadQuote(
+                symbol=symbol, kind="iron_condor",
+                short_strike=put["short_k"], long_strike=put["long_k"],
+                call_short_strike=call["short_k"], call_long_strike=call["long_k"],
+                credit=round(total, 2),
+                put_credit=round(put["credit"], 2), call_credit=round(call["credit"], 2),
+                max_loss=round(max(rw - total, 0.0) * 100.0, 2),
+                collateral=round(rw * 100.0, 2),
+                dte=(put["expiry"] - date.today()).days,
+                spread_pct=round(max(put["spread_pct"], call["spread_pct"]), 4),
+                short_symbol=put["short_occ"], long_symbol=put["long_occ"],
+                call_short_symbol=call["short_occ"], call_long_symbol=call["long_occ"],
+                expiry=put["expiry"].isoformat(),
+            )
+
+        leg = self._vertical_leg(symbol, _OPT_TYPE[kind], target_delta, width, dte)
+        if not leg or leg["credit"] <= 0:
+            return None
+        rw = abs(leg["short_k"] - leg["long_k"])
         return SpreadQuote(
-            symbol=symbol,
-            kind=kind,
-            short_strike=short_k,
-            long_strike=long_k,
-            credit=round(credit, 2),
-            max_loss=round(max(real_width - credit, 0.0) * 100.0, 2),
-            collateral=round(real_width * 100.0, 2),
-            dte=(expiry - date.today()).days,
-            spread_pct=round(spread_pct, 4),
-            short_symbol=short_c["occ"],
-            long_symbol=long_c["occ"],
-            expiry=expiry.isoformat(),
+            symbol=symbol, kind=kind,
+            short_strike=leg["short_k"], long_strike=leg["long_k"],
+            credit=round(leg["credit"], 2),
+            max_loss=round(max(rw - leg["credit"], 0.0) * 100.0, 2),
+            collateral=round(rw * 100.0, 2),
+            dte=(leg["expiry"] - date.today()).days,
+            spread_pct=round(leg["spread_pct"], 4),
+            short_symbol=leg["short_occ"], long_symbol=leg["long_occ"],
+            expiry=leg["expiry"].isoformat(),
         )
 
     def quote_debit_spread(
@@ -236,6 +268,13 @@ class AlpacaOptionsBroker:
             OptionLegRequest(symbol=q.long_symbol, ratio_qty=1, side=OrderSide.BUY,
                              position_intent=PositionIntent.BUY_TO_OPEN),
         ]
+        if q.is_condor:  # iron condor : on ajoute l'aile call
+            legs += [
+                OptionLegRequest(symbol=q.call_short_symbol, ratio_qty=1, side=OrderSide.SELL,
+                                 position_intent=PositionIntent.SELL_TO_OPEN),
+                OptionLegRequest(symbol=q.call_long_symbol, ratio_qty=1, side=OrderSide.BUY,
+                                 position_intent=PositionIntent.BUY_TO_OPEN),
+            ]
         return self._submit(legs, limit_price=round(q.credit, 2),
                             tag=f"open {q.kind} {q.symbol}", reason=reason,
                             qty=max(int(q.contracts), 1), meta={"quote": q.__dict__})

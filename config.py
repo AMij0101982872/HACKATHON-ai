@@ -26,7 +26,10 @@ LOOKBACK_DAYS = SLOW_MA + 10  # marge pour calculer la MM longue
 # --- Stratégie options : spreads verticaux à crédit ------------------------
 OPTION_UNIVERSE = [
     s.strip().upper()
-    for s in _get("OPTION_UNIVERSE", "SPY,QQQ,AAPL,MSFT,NVDA,AMD").split(",")
+    for s in _get(
+        "OPTION_UNIVERSE",
+        "SPY,QQQ,IWM,AAPL,MSFT,NVDA,AMD,META,GOOGL,AMZN,TSLA",
+    ).split(",")
     if s.strip()
 ]
 TARGET_DELTA = float(_get("TARGET_DELTA", "0.30"))     # delta visé pour la jambe courte
@@ -36,7 +39,7 @@ SPREAD_WIDTH = float(_get("SPREAD_WIDTH", "5"))        # écart entre strikes ($
 REGIME_THRESHOLD = float(_get("REGIME_THRESHOLD", "0.03"))
 DTE_TARGET = int(_get("DTE_TARGET", "7"))              # jours à l'échéance à l'ouverture
 SPREAD_CONTRACTS = int(_get("SPREAD_CONTRACTS", "5"))    # contrats par structure à crédit
-TAKE_PROFIT_PCT = float(_get("TAKE_PROFIT_PCT", "0.5"))  # clôture à 50 % du crédit encaissé
+TAKE_PROFIT_PCT = float(_get("TAKE_PROFIT_PCT", "0.4"))  # clôture à 40 % du crédit (réalise plus vite)
 STOP_LOSS_MULT = float(_get("STOP_LOSS_MULT", "2"))      # stop à 2x le crédit
 # Backtest : descendre ce seuil sous 0,15 détruit l'espérance (spreads mal payés × levier).
 MIN_CREDIT_RATIO = float(_get("MIN_CREDIT_RATIO", "0.15"))  # crédit/largeur minimal pour ouvrir

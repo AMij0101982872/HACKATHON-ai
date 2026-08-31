@@ -166,7 +166,11 @@ def run_once() -> dict:
 def _remember_entry_credit(quote) -> None:
     state = _load_state()
     ec = state.setdefault("entry_credits", {})
-    ec[f"{quote.short_symbol}|{quote.long_symbol}"] = quote.credit
+    if getattr(quote, "is_condor", False):
+        ec[f"{quote.short_symbol}|{quote.long_symbol}"] = quote.put_credit
+        ec[f"{quote.call_short_symbol}|{quote.call_long_symbol}"] = quote.call_credit
+    else:
+        ec[f"{quote.short_symbol}|{quote.long_symbol}"] = quote.credit
     _save_state(state)
 
 
