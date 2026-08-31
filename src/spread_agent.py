@@ -8,7 +8,7 @@ Le "runner" (CLI Alpaca en cron) est responsable d'exécuter les décisions.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Literal, Protocol
 
 from src.risk_guard import AccountState, ProposedOrder, RiskDecision, RiskParams, check_order
@@ -125,6 +125,7 @@ class SpreadConfig:
     target_delta: float = 0.30
     width: float = 5.0
     dte: int = 7
+    contracts: int = 1             # nombre de contrats par structure
     take_profit_pct: float = 0.50   # clôture si P&L latent >= 50 % du crédit encaissé
     stop_loss_mult: float = 2.0     # clôture si perte latente >= 2x le crédit encaissé
     close_dte: int = 1              # clôture systématique à <= 1 jour de l'échéance
@@ -207,6 +208,11 @@ class SpreadAgent:
                 f"{self.cfg.min_credit_ratio:.0%} — trop peu payé",
                 quote=quote,
             )
+
+        n = max(self.cfg.contracts, 1)
+        if n != 1:  # le broker cote 1 contrat ; on met à l'échelle risque + collatéral
+            quote = replace(quote, contracts=n,
+                            max_loss=quote.max_loss * n, collateral=quote.collateral * n)
 
         order = ProposedOrder(
             symbol=view.symbol,

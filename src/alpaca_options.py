@@ -235,23 +235,24 @@ class AlpacaOptionsBroker:
         ]
         return self._submit(legs, limit_price=round(q.credit, 2),
                             tag=f"open {q.kind} {q.symbol}", reason=reason,
-                            meta={"quote": q.__dict__})
+                            qty=max(int(q.contracts), 1), meta={"quote": q.__dict__})
 
     def execute_close(self, position: SpreadPosition, reason: str) -> dict | None:
         legs = self._legs_for_close(position.symbol)
         if not legs:
             return None
         return self._submit(legs, limit_price=None, tag=f"close {position.kind} {position.symbol}",
-                            reason=reason, meta={})
+                            reason=reason, qty=max(int(position.contracts), 1), meta={})
 
     # ------------------------------------------------------------------
     # Interne
     # ------------------------------------------------------------------
-    def _submit(self, legs, limit_price, tag: str, reason: str, meta: dict) -> dict:
+    def _submit(self, legs, limit_price, tag: str, reason: str, meta: dict, qty: int = 1) -> dict:
         record = {
             "ts": datetime.now(timezone.utc).isoformat(),
             "tag": tag,
             "reason": reason,
+            "qty": qty,
             "legs": [{"symbol": lg.symbol, "side": lg.side.value,
                       "intent": lg.position_intent.value} for lg in legs],
             "limit_price": limit_price,
@@ -264,7 +265,7 @@ class AlpacaOptionsBroker:
             return record
 
         req = LimitOrderRequest(
-            qty=1,
+            qty=max(int(qty), 1),
             order_class=OrderClass.MLEG,
             time_in_force=TimeInForce.DAY,
             legs=legs,

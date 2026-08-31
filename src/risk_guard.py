@@ -69,7 +69,7 @@ PROFILES: dict[str, RiskParams] = {
     ),
     "aggressive": RiskParams(
         max_positions=15,
-        max_order_loss=3_000.0,
+        max_order_loss=4_000.0,
         max_symbol_exposure_pct=0.35,
         min_cash_buffer_pct=0.02,
         daily_max_loss_pct=0.15,

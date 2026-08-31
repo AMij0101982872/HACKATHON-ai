@@ -7,7 +7,7 @@ passe par `risk_guard.check_order` **et** un plafond de budget de poche (% de l'
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from src.risk_guard import AccountState, ProposedOrder, RiskParams, check_order
 from src.spread_agent import AccountSnapshot, Broker, Decision, SymbolView
@@ -23,6 +23,7 @@ class PocketConfig:
     width: float = 5.0
     dte: int = 14
     max_pocket_pct: float = 0.15    # débit total de la poche <= 15 % de l'equity
+    contracts: int = 1             # contrats par debit spread
     take_profit_pct: float = 1.0    # clôture si P&L latent >= 100 % du débit payé
     stop_loss_pct: float = 0.5      # clôture si perte latente >= 50 % du débit payé
     close_dte: int = 1
@@ -99,6 +100,11 @@ class DirectionalPocket:
         )
         if quote is None:
             return Decision(view.symbol, "hold", "poche : pas de spread cotable")
+
+        n = max(self.cfg.contracts, 1)
+        if n != 1:
+            quote = replace(quote, contracts=n,
+                            max_loss=quote.max_loss * n, collateral=quote.collateral * n)
 
         debit_dollars = quote.credit * 100.0 * quote.contracts
         budget_cap = self.cfg.max_pocket_pct * acct.equity

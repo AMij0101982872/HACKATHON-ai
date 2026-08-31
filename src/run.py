@@ -41,8 +41,10 @@ def _spread_config() -> SpreadConfig:
         target_delta=config.TARGET_DELTA,
         width=config.SPREAD_WIDTH,
         dte=config.DTE_TARGET,
+        contracts=config.SPREAD_CONTRACTS,
         take_profit_pct=config.TAKE_PROFIT_PCT,
         stop_loss_mult=config.STOP_LOSS_MULT,
+        min_credit_ratio=config.MIN_CREDIT_RATIO,
     )
 
 
@@ -52,6 +54,8 @@ def _pocket_config() -> PocketConfig:
         width=config.SPREAD_WIDTH,
         dte=config.POCKET_DTE,
         max_pocket_pct=config.POCKET_MAX_PCT,
+        contracts=config.POCKET_CONTRACTS,
+        max_concurrent=config.POCKET_MAX_CONCURRENT,
     )
 
 
