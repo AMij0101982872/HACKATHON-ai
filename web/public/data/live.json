@@ -119,6 +119,12 @@
       "equity": 98145.15,
       "cash": 102959.15,
       "positions": 8
+    },
+    {
+      "ts": "2026-09-01T19:56:55.983092+00:00",
+      "equity": 94615.9,
+      "cash": 105092.9,
+      "positions": 11
     }
   ],
   "decisions": [
@@ -3882,29 +3888,95 @@
       "symbol": "TSLA",
       "action": "hold",
       "reason": "position conserv\u00e9e (P&L -775$, DTE 8)"
+    },
+    {
+      "ts": "2026-09-01T19:56:55.983027+00:00",
+      "symbol": "SPY",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -65$, DTE 7)"
+    },
+    {
+      "ts": "2026-09-01T19:56:55.983052+00:00",
+      "symbol": "QQQ",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -73$, DTE 7)"
+    },
+    {
+      "ts": "2026-09-01T19:56:55.983059+00:00",
+      "symbol": "IWM",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -295$, DTE 7)"
+    },
+    {
+      "ts": "2026-09-01T19:56:55.983063+00:00",
+      "symbol": "AAPL",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L +250$, DTE 8)"
+    },
+    {
+      "ts": "2026-09-01T19:56:55.983066+00:00",
+      "symbol": "MSFT",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -305$, DTE 8)"
+    },
+    {
+      "ts": "2026-09-01T19:56:55.983070+00:00",
+      "symbol": "NVDA",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -135$, DTE 8)"
+    },
+    {
+      "ts": "2026-09-01T19:56:55.983073+00:00",
+      "symbol": "AMD",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -220$, DTE 8)"
+    },
+    {
+      "ts": "2026-09-01T19:56:55.983076+00:00",
+      "symbol": "META",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -2025$, DTE 8)"
+    },
+    {
+      "ts": "2026-09-01T19:56:55.983079+00:00",
+      "symbol": "GOOGL",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -370$, DTE 8)"
+    },
+    {
+      "ts": "2026-09-01T19:56:55.983082+00:00",
+      "symbol": "AMZN",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -1260$, DTE 8)"
+    },
+    {
+      "ts": "2026-09-01T19:56:55.983085+00:00",
+      "symbol": "TSLA",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -800$, DTE 8)"
     }
   ],
-  "generated_at": "2026-09-01T17:00:36.924802+00:00",
+  "generated_at": "2026-09-01T19:56:55.983092+00:00",
   "dry_run": false,
   "latest": {
-    "ts": "2026-09-01T17:00:36.924802+00:00",
+    "ts": "2026-09-01T19:56:55.983092+00:00",
     "dry_run": false,
-    "equity": 98145.15,
-    "cash": 102959.15,
-    "buying_power": 86954.15,
+    "equity": 94615.9,
+    "cash": 105092.9,
+    "buying_power": 81582.9,
     "start_of_day_equity": 98145.15,
     "high_water_mark": 100008.9,
     "last_equity": 99669.4,
-    "day_pl": -1524.25,
-    "total_pl": -1854.85,
-    "open_positions": 8,
+    "day_pl": -5053.5,
+    "total_pl": -5384.1,
+    "open_positions": 11,
     "positions": [
       {
         "symbol": "AAPL",
         "kind": "bull_put",
         "entry_credit": 1.53,
-        "current_value": 0.47,
-        "unrealized_pl": 315.0,
+        "current_value": 0.59,
+        "unrealized_pl": 245.0,
         "dte": 8,
         "contracts": 5
       },
@@ -3912,8 +3984,8 @@
         "symbol": "AMD",
         "kind": "bear_call",
         "entry_credit": 1.13,
-        "current_value": 0.57,
-        "unrealized_pl": -45.0,
+        "current_value": 0.71,
+        "unrealized_pl": -220.0,
         "dte": 8,
         "contracts": 5
       },
@@ -3921,8 +3993,17 @@
         "symbol": "AMZN",
         "kind": "iron_condor",
         "entry_credit": 2.4,
-        "current_value": 2.35,
-        "unrealized_pl": -1095.0,
+        "current_value": 2.62,
+        "unrealized_pl": -1260.0,
+        "dte": 8,
+        "contracts": 5
+      },
+      {
+        "symbol": "GOOGL",
+        "kind": "iron_condor",
+        "entry_credit": 2.17,
+        "current_value": 2.33,
+        "unrealized_pl": -370.0,
         "dte": 8,
         "contracts": 5
       },
@@ -3930,17 +4011,35 @@
         "symbol": "IWM",
         "kind": "iron_condor",
         "entry_credit": 1.76,
-        "current_value": 1.88,
-        "unrealized_pl": -205.0,
+        "current_value": 1.98,
+        "unrealized_pl": -295.0,
         "dte": 7,
+        "contracts": 5
+      },
+      {
+        "symbol": "META",
+        "kind": "iron_condor",
+        "entry_credit": 2.7,
+        "current_value": 3.68,
+        "unrealized_pl": -2050.0,
+        "dte": 8,
+        "contracts": 5
+      },
+      {
+        "symbol": "MSFT",
+        "kind": "bull_put",
+        "entry_credit": 1.27,
+        "current_value": 1.15,
+        "unrealized_pl": -305.0,
+        "dte": 8,
         "contracts": 5
       },
       {
         "symbol": "NVDA",
         "kind": "bull_put",
         "entry_credit": 0.85,
-        "current_value": 0.72,
-        "unrealized_pl": 45.0,
+        "current_value": 1.02,
+        "unrealized_pl": -135.0,
         "dte": 8,
         "contracts": 5
       },
@@ -3948,8 +4047,8 @@
         "symbol": "QQQ",
         "kind": "bull_put",
         "entry_credit": 0.98,
-        "current_value": 1.27,
-        "unrealized_pl": -46.0,
+        "current_value": 1.55,
+        "unrealized_pl": -74.0,
         "dte": 7,
         "contracts": 1
       },
@@ -3957,8 +4056,8 @@
         "symbol": "SPY",
         "kind": "bull_put",
         "entry_credit": 0.91,
-        "current_value": 1.44,
-        "unrealized_pl": -46.0,
+        "current_value": 1.58,
+        "unrealized_pl": -66.0,
         "dte": 7,
         "contracts": 1
       },
@@ -3966,8 +4065,8 @@
         "symbol": "TSLA",
         "kind": "bull_put",
         "entry_credit": 1.41,
-        "current_value": 2.47,
-        "unrealized_pl": -775.0,
+        "current_value": 2.41,
+        "unrealized_pl": -825.0,
         "dte": 8,
         "contracts": 5
       }
