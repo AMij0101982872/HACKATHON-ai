@@ -149,6 +149,12 @@
       "equity": 98530.81,
       "cash": 105090.81,
       "positions": 11
+    },
+    {
+      "ts": "2026-09-04T21:29:03.305850+00:00",
+      "equity": 97748.81,
+      "cash": 105090.81,
+      "positions": 11
     }
   ],
   "decisions": [
@@ -4418,120 +4424,284 @@
       "symbol": "TSLA",
       "action": "hold",
       "reason": "position conserv\u00e9e (P&L +115$, DTE 6)"
+    },
+    {
+      "ts": "2026-09-04T21:29:03.199040+00:00",
+      "symbol": "SPY",
+      "action": "close",
+      "reason": "prise de profit : P&L +82$ >= 40% du cr\u00e9dit",
+      "order": {
+        "ts": "2026-09-04T21:29:03.219488+00:00",
+        "tag": "close bull_put SPY",
+        "reason": "prise de profit : P&L +82$ >= 40% du cr\u00e9dit",
+        "qty": 1,
+        "legs": [
+          {
+            "symbol": "SPY260908P00755000",
+            "side": "sell",
+            "intent": "sell_to_close"
+          },
+          {
+            "symbol": "SPY260908P00760000",
+            "side": "buy",
+            "intent": "buy_to_close"
+          }
+        ],
+        "limit_price": null,
+        "dry_run": false,
+        "status": "OrderStatus.ACCEPTED",
+        "order_id": "d43334b4-959f-4283-a8f2-e93cf488ca9e"
+      }
+    },
+    {
+      "ts": "2026-09-04T21:29:03.235638+00:00",
+      "symbol": "QQQ",
+      "action": "close",
+      "reason": "prise de profit : P&L +78$ >= 40% du cr\u00e9dit",
+      "order": {
+        "ts": "2026-09-04T21:29:03.247540+00:00",
+        "tag": "close bull_put QQQ",
+        "reason": "prise de profit : P&L +78$ >= 40% du cr\u00e9dit",
+        "qty": 1,
+        "legs": [
+          {
+            "symbol": "QQQ260908P00700000",
+            "side": "sell",
+            "intent": "sell_to_close"
+          },
+          {
+            "symbol": "QQQ260908P00705000",
+            "side": "buy",
+            "intent": "buy_to_close"
+          }
+        ],
+        "limit_price": null,
+        "dry_run": false,
+        "status": "OrderStatus.ACCEPTED",
+        "order_id": "e4ec0424-98a8-4da8-a3e2-639a27acf262"
+      }
+    },
+    {
+      "ts": "2026-09-04T21:29:03.258970+00:00",
+      "symbol": "IWM",
+      "action": "close",
+      "reason": "prise de profit : P&L +375$ >= 40% du cr\u00e9dit",
+      "order": {
+        "ts": "2026-09-04T21:29:03.267507+00:00",
+        "tag": "close iron_condor IWM",
+        "reason": "prise de profit : P&L +375$ >= 40% du cr\u00e9dit",
+        "qty": 5,
+        "legs": [
+          {
+            "symbol": "IWM260908C00297000",
+            "side": "buy",
+            "intent": "buy_to_close"
+          },
+          {
+            "symbol": "IWM260908C00302000",
+            "side": "sell",
+            "intent": "sell_to_close"
+          },
+          {
+            "symbol": "IWM260908P00286000",
+            "side": "sell",
+            "intent": "sell_to_close"
+          },
+          {
+            "symbol": "IWM260908P00291000",
+            "side": "buy",
+            "intent": "buy_to_close"
+          }
+        ],
+        "limit_price": null,
+        "dry_run": false,
+        "status": "OrderStatus.ACCEPTED",
+        "order_id": "57a0cc7a-a74d-49d9-9bc6-617cbffde90c"
+      }
+    },
+    {
+      "ts": "2026-09-04T21:29:03.279723+00:00",
+      "symbol": "AAPL",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L +210$, DTE 5)"
+    },
+    {
+      "ts": "2026-09-04T21:29:03.279733+00:00",
+      "symbol": "MSFT",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -100$, DTE 5)"
+    },
+    {
+      "ts": "2026-09-04T21:29:03.279738+00:00",
+      "symbol": "NVDA",
+      "action": "close",
+      "reason": "prise de profit : P&L +360$ >= 40% du cr\u00e9dit",
+      "order": {
+        "ts": "2026-09-04T21:29:03.295067+00:00",
+        "tag": "close bull_put NVDA",
+        "reason": "prise de profit : P&L +360$ >= 40% du cr\u00e9dit",
+        "qty": 5,
+        "legs": [
+          {
+            "symbol": "NVDA260909P00207500",
+            "side": "sell",
+            "intent": "sell_to_close"
+          },
+          {
+            "symbol": "NVDA260909P00212500",
+            "side": "buy",
+            "intent": "buy_to_close"
+          }
+        ],
+        "limit_price": null,
+        "dry_run": false,
+        "status": "OrderStatus.ACCEPTED",
+        "order_id": "3be5a0fe-e3a4-4c25-a6fa-46bdb9751826"
+      }
+    },
+    {
+      "ts": "2026-09-04T21:29:03.305825+00:00",
+      "symbol": "AMD",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -300$, DTE 5)"
+    },
+    {
+      "ts": "2026-09-04T21:29:03.305835+00:00",
+      "symbol": "META",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -1685$, DTE 5)"
+    },
+    {
+      "ts": "2026-09-04T21:29:03.305838+00:00",
+      "symbol": "GOOGL",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L +170$, DTE 5)"
+    },
+    {
+      "ts": "2026-09-04T21:29:03.305841+00:00",
+      "symbol": "AMZN",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -485$, DTE 5)"
+    },
+    {
+      "ts": "2026-09-04T21:29:03.305843+00:00",
+      "symbol": "TSLA",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -950$, DTE 5)"
     }
   ],
-  "generated_at": "2026-09-03T21:52:02.107940+00:00",
+  "generated_at": "2026-09-04T21:29:03.305850+00:00",
   "dry_run": false,
   "latest": {
-    "ts": "2026-09-03T21:52:02.107940+00:00",
+    "ts": "2026-09-04T21:29:03.305850+00:00",
     "dry_run": false,
-    "equity": 98530.81,
+    "equity": 97748.81,
     "cash": 105090.81,
     "buying_power": 81590.81,
-    "start_of_day_equity": 98530.81,
+    "start_of_day_equity": 97748.81,
     "high_water_mark": 100008.9,
-    "last_equity": 98216.81,
-    "day_pl": 314.0,
-    "total_pl": -1469.19,
+    "last_equity": 99622.81,
+    "day_pl": -1874.0,
+    "total_pl": -2251.19,
     "open_positions": 11,
     "positions": [
       {
         "symbol": "AAPL",
         "kind": "bull_put",
         "entry_credit": 1.53,
-        "current_value": 0.21,
-        "unrealized_pl": 465.0,
-        "dte": 6,
+        "current_value": 0.69,
+        "unrealized_pl": 210.0,
+        "dte": 5,
         "contracts": 5
       },
       {
         "symbol": "AMD",
         "kind": "bear_call",
         "entry_credit": 1.13,
-        "current_value": 0.32,
-        "unrealized_pl": 145.0,
-        "dte": 6,
+        "current_value": 1.14,
+        "unrealized_pl": -300.0,
+        "dte": 5,
         "contracts": 5
       },
       {
         "symbol": "AMZN",
         "kind": "iron_condor",
         "entry_credit": 2.4,
-        "current_value": 1.69,
-        "unrealized_pl": -695.0,
-        "dte": 6,
+        "current_value": 1.33,
+        "unrealized_pl": -485.0,
+        "dte": 5,
         "contracts": 5
       },
       {
         "symbol": "GOOGL",
         "kind": "iron_condor",
         "entry_credit": 2.17,
-        "current_value": 2.55,
-        "unrealized_pl": -625.0,
-        "dte": 6,
+        "current_value": 1.42,
+        "unrealized_pl": 170.0,
+        "dte": 5,
         "contracts": 5
       },
       {
         "symbol": "IWM",
         "kind": "iron_condor",
         "entry_credit": 1.76,
-        "current_value": 1.03,
-        "unrealized_pl": 185.0,
-        "dte": 5,
+        "current_value": 0.66,
+        "unrealized_pl": 375.0,
+        "dte": 4,
         "contracts": 5
       },
       {
         "symbol": "META",
         "kind": "iron_condor",
         "entry_credit": 2.7,
-        "current_value": 3.82,
-        "unrealized_pl": -1770.0,
-        "dte": 6,
+        "current_value": 4.46,
+        "unrealized_pl": -1685.0,
+        "dte": 5,
         "contracts": 5
       },
       {
         "symbol": "MSFT",
         "kind": "bull_put",
         "entry_credit": 1.27,
-        "current_value": 0.33,
-        "unrealized_pl": 235.0,
-        "dte": 6,
+        "current_value": 0.93,
+        "unrealized_pl": -100.0,
+        "dte": 5,
         "contracts": 5
       },
       {
         "symbol": "NVDA",
         "kind": "bull_put",
         "entry_credit": 0.85,
-        "current_value": 0.08,
-        "unrealized_pl": 350.0,
-        "dte": 6,
+        "current_value": 0.02,
+        "unrealized_pl": 360.0,
+        "dte": 5,
         "contracts": 5
       },
       {
         "symbol": "QQQ",
         "kind": "bull_put",
         "entry_credit": 0.98,
-        "current_value": 0.32,
-        "unrealized_pl": 55.0,
-        "dte": 5,
+        "current_value": 0.07,
+        "unrealized_pl": 78.0,
+        "dte": 4,
         "contracts": 1
       },
       {
         "symbol": "SPY",
         "kind": "bull_put",
         "entry_credit": 0.91,
-        "current_value": 0.14,
-        "unrealized_pl": 77.0,
-        "dte": 5,
+        "current_value": 0.12,
+        "unrealized_pl": 82.0,
+        "dte": 4,
         "contracts": 1
       },
       {
         "symbol": "TSLA",
         "kind": "bull_put",
         "entry_credit": 1.41,
-        "current_value": 0.65,
-        "unrealized_pl": 115.0,
-        "dte": 6,
+        "current_value": 2.75,
+        "unrealized_pl": -950.0,
+        "dte": 5,
         "contracts": 5
       }
     ],
