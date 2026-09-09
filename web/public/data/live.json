@@ -155,6 +155,12 @@
       "equity": 97748.81,
       "cash": 105090.81,
       "positions": 11
+    },
+    {
+      "ts": "2026-09-09T16:55:04.421683+00:00",
+      "equity": 94176.78,
+      "cash": 107401.78,
+      "positions": 10
     }
   ],
   "decisions": [
@@ -4588,120 +4594,437 @@
       "symbol": "TSLA",
       "action": "hold",
       "reason": "position conserv\u00e9e (P&L -950$, DTE 5)"
+    },
+    {
+      "ts": "2026-09-09T16:55:04.024713+00:00",
+      "symbol": "SPY",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -25$, DTE 6)"
+    },
+    {
+      "ts": "2026-09-09T16:55:04.024733+00:00",
+      "symbol": "QQQ",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -45$, DTE 6)"
+    },
+    {
+      "ts": "2026-09-09T16:55:04.024738+00:00",
+      "symbol": "IWM",
+      "action": "open",
+      "reason": "ouverture iron_condor IWM (cr\u00e9dit 2.24/action)",
+      "order": {
+        "ts": "2026-09-09T16:55:04.024777+00:00",
+        "tag": "open iron_condor IWM",
+        "reason": "ouverture iron_condor IWM (cr\u00e9dit 2.24/action)",
+        "qty": 5,
+        "legs": [
+          {
+            "symbol": "IWM260916P00288000",
+            "side": "sell",
+            "intent": "sell_to_open"
+          },
+          {
+            "symbol": "IWM260916P00283000",
+            "side": "buy",
+            "intent": "buy_to_open"
+          },
+          {
+            "symbol": "IWM260916C00294000",
+            "side": "sell",
+            "intent": "sell_to_open"
+          },
+          {
+            "symbol": "IWM260916C00299000",
+            "side": "buy",
+            "intent": "buy_to_open"
+          }
+        ],
+        "limit_price": 2.24,
+        "dry_run": false,
+        "quote": {
+          "symbol": "IWM",
+          "kind": "iron_condor",
+          "short_strike": 288.0,
+          "long_strike": 283.0,
+          "credit": 2.24,
+          "max_loss": 1379.5500000000002,
+          "collateral": 2500.0,
+          "dte": 7,
+          "spread_pct": 0.0712,
+          "contracts": 5,
+          "short_symbol": "IWM260916P00288000",
+          "long_symbol": "IWM260916P00283000",
+          "expiry": "2026-09-16",
+          "strategy": "credit",
+          "call_short_strike": 294.0,
+          "call_long_strike": 299.0,
+          "call_short_symbol": "IWM260916C00294000",
+          "call_long_symbol": "IWM260916C00299000",
+          "put_credit": 1.14,
+          "call_credit": 1.1
+        },
+        "status": "OrderStatus.PENDING_NEW",
+        "order_id": "a06f1195-5ab4-4de0-b9a2-43af0d6a41da"
+      }
+    },
+    {
+      "ts": "2026-09-09T16:55:04.084426+00:00",
+      "symbol": "AAPL",
+      "action": "close",
+      "reason": "\u00e9ch\u00e9ance proche (DTE 0)",
+      "order": {
+        "ts": "2026-09-09T16:55:04.096520+00:00",
+        "tag": "close bull_put AAPL",
+        "reason": "\u00e9ch\u00e9ance proche (DTE 0)",
+        "qty": 5,
+        "legs": [
+          {
+            "symbol": "AAPL260909P00307500",
+            "side": "sell",
+            "intent": "sell_to_close"
+          },
+          {
+            "symbol": "AAPL260909P00312500",
+            "side": "buy",
+            "intent": "buy_to_close"
+          }
+        ],
+        "limit_price": null,
+        "dry_run": false,
+        "status": "OrderStatus.PENDING_NEW",
+        "order_id": "2d424d32-91df-4cc7-bf8e-1be9df040c01"
+      }
+    },
+    {
+      "ts": "2026-09-09T16:55:04.111706+00:00",
+      "symbol": "MSFT",
+      "action": "close",
+      "reason": "\u00e9ch\u00e9ance proche (DTE 0)",
+      "order": {
+        "ts": "2026-09-09T16:55:04.129359+00:00",
+        "tag": "close bull_put MSFT",
+        "reason": "\u00e9ch\u00e9ance proche (DTE 0)",
+        "qty": 5,
+        "legs": [
+          {
+            "symbol": "MSFT260909P00487500",
+            "side": "sell",
+            "intent": "sell_to_close"
+          },
+          {
+            "symbol": "MSFT260909P00492500",
+            "side": "buy",
+            "intent": "buy_to_close"
+          }
+        ],
+        "limit_price": null,
+        "dry_run": false,
+        "status": "OrderStatus.PENDING_NEW",
+        "order_id": "2c431831-e5a7-4a8c-ad2c-053604a8a539"
+      }
+    },
+    {
+      "ts": "2026-09-09T16:55:04.156245+00:00",
+      "symbol": "NVDA",
+      "action": "close",
+      "reason": "prise de profit : P&L +395$ >= 40% du cr\u00e9dit",
+      "order": {
+        "ts": "2026-09-09T16:55:04.172624+00:00",
+        "tag": "close bull_put NVDA",
+        "reason": "prise de profit : P&L +395$ >= 40% du cr\u00e9dit",
+        "qty": 5,
+        "legs": [
+          {
+            "symbol": "NVDA260909P00207500",
+            "side": "sell",
+            "intent": "sell_to_close"
+          },
+          {
+            "symbol": "NVDA260909P00212500",
+            "side": "buy",
+            "intent": "buy_to_close"
+          }
+        ],
+        "limit_price": null,
+        "dry_run": false,
+        "status": "OrderStatus.PENDING_NEW",
+        "order_id": "5259d0de-7799-45ab-bb74-c5865136d9ef"
+      }
+    },
+    {
+      "ts": "2026-09-09T16:55:04.187914+00:00",
+      "symbol": "AMD",
+      "action": "close",
+      "reason": "stop : P&L -3075$ <= -2x le cr\u00e9dit",
+      "order": {
+        "ts": "2026-09-09T16:55:04.209820+00:00",
+        "tag": "close bear_call AMD",
+        "reason": "stop : P&L -3075$ <= -2x le cr\u00e9dit",
+        "qty": 5,
+        "legs": [
+          {
+            "symbol": "AMD260909C00490000",
+            "side": "buy",
+            "intent": "buy_to_close"
+          },
+          {
+            "symbol": "AMD260909C00495000",
+            "side": "sell",
+            "intent": "sell_to_close"
+          }
+        ],
+        "limit_price": null,
+        "dry_run": false,
+        "status": "OrderStatus.PENDING_NEW",
+        "order_id": "297fe5d7-ac90-4ac5-8a5b-d2efa5cfef71"
+      }
+    },
+    {
+      "ts": "2026-09-09T16:55:04.234004+00:00",
+      "symbol": "META",
+      "action": "close",
+      "reason": "stop : P&L -3655$ <= -2x le cr\u00e9dit",
+      "order": {
+        "ts": "2026-09-09T16:55:04.245923+00:00",
+        "tag": "close iron_condor META",
+        "reason": "stop : P&L -3655$ <= -2x le cr\u00e9dit",
+        "qty": 5,
+        "legs": [
+          {
+            "symbol": "META260909C00595000",
+            "side": "buy",
+            "intent": "buy_to_close"
+          },
+          {
+            "symbol": "META260909C00600000",
+            "side": "sell",
+            "intent": "sell_to_close"
+          },
+          {
+            "symbol": "META260909P00562500",
+            "side": "sell",
+            "intent": "sell_to_close"
+          },
+          {
+            "symbol": "META260909P00567500",
+            "side": "buy",
+            "intent": "buy_to_close"
+          }
+        ],
+        "limit_price": null,
+        "dry_run": false,
+        "status": "OrderStatus.PENDING_NEW",
+        "order_id": "1d727b83-2147-41a5-a986-05241c111257"
+      }
+    },
+    {
+      "ts": "2026-09-09T16:55:04.268509+00:00",
+      "symbol": "GOOGL",
+      "action": "close",
+      "reason": "prise de profit : P&L +535$ >= 40% du cr\u00e9dit",
+      "order": {
+        "ts": "2026-09-09T16:55:04.312830+00:00",
+        "tag": "close iron_condor GOOGL",
+        "reason": "prise de profit : P&L +535$ >= 40% du cr\u00e9dit",
+        "qty": 5,
+        "legs": [
+          {
+            "symbol": "GOOGL260909C00342500",
+            "side": "buy",
+            "intent": "buy_to_close"
+          },
+          {
+            "symbol": "GOOGL260909C00347500",
+            "side": "sell",
+            "intent": "sell_to_close"
+          },
+          {
+            "symbol": "GOOGL260909P00325000",
+            "side": "sell",
+            "intent": "sell_to_close"
+          },
+          {
+            "symbol": "GOOGL260909P00330000",
+            "side": "buy",
+            "intent": "buy_to_close"
+          }
+        ],
+        "limit_price": null,
+        "dry_run": false,
+        "status": "OrderStatus.PENDING_NEW",
+        "order_id": "2de61033-2190-4feb-8a20-4526c46c6682"
+      }
+    },
+    {
+      "ts": "2026-09-09T16:55:04.331121+00:00",
+      "symbol": "AMZN",
+      "action": "close",
+      "reason": "\u00e9ch\u00e9ance proche (DTE 0)",
+      "order": {
+        "ts": "2026-09-09T16:55:04.346723+00:00",
+        "tag": "close iron_condor AMZN",
+        "reason": "\u00e9ch\u00e9ance proche (DTE 0)",
+        "qty": 5,
+        "legs": [
+          {
+            "symbol": "AMZN260909C00265000",
+            "side": "buy",
+            "intent": "buy_to_close"
+          },
+          {
+            "symbol": "AMZN260909C00270000",
+            "side": "sell",
+            "intent": "sell_to_close"
+          },
+          {
+            "symbol": "AMZN260909P00250000",
+            "side": "sell",
+            "intent": "sell_to_close"
+          },
+          {
+            "symbol": "AMZN260909P00255000",
+            "side": "buy",
+            "intent": "buy_to_close"
+          }
+        ],
+        "limit_price": null,
+        "dry_run": false,
+        "status": "OrderStatus.PENDING_NEW",
+        "order_id": "fabeb9a1-b6f9-448a-af82-cab37f1c79cd"
+      }
+    },
+    {
+      "ts": "2026-09-09T16:55:04.376995+00:00",
+      "symbol": "TSLA",
+      "action": "close",
+      "reason": "prise de profit : P&L +465$ >= 40% du cr\u00e9dit",
+      "order": {
+        "ts": "2026-09-09T16:55:04.400731+00:00",
+        "tag": "close bull_put TSLA",
+        "reason": "prise de profit : P&L +465$ >= 40% du cr\u00e9dit",
+        "qty": 5,
+        "legs": [
+          {
+            "symbol": "TSLA260909P00352500",
+            "side": "sell",
+            "intent": "sell_to_close"
+          },
+          {
+            "symbol": "TSLA260909P00357500",
+            "side": "buy",
+            "intent": "buy_to_close"
+          }
+        ],
+        "limit_price": null,
+        "dry_run": false,
+        "status": "OrderStatus.PENDING_NEW",
+        "order_id": "96629ace-f567-4856-af4d-3e7dd1da986f"
+      }
     }
   ],
-  "generated_at": "2026-09-04T21:29:03.305850+00:00",
+  "generated_at": "2026-09-09T16:55:04.421683+00:00",
   "dry_run": false,
   "latest": {
-    "ts": "2026-09-04T21:29:03.305850+00:00",
+    "ts": "2026-09-09T16:55:04.421683+00:00",
     "dry_run": false,
-    "equity": 97748.81,
-    "cash": 105090.81,
-    "buying_power": 81590.81,
-    "start_of_day_equity": 97748.81,
+    "equity": 94176.78,
+    "cash": 107401.78,
+    "buying_power": 82401.78,
+    "start_of_day_equity": 94176.78,
     "high_water_mark": 100008.9,
-    "last_equity": 99622.81,
-    "day_pl": -1874.0,
-    "total_pl": -2251.19,
-    "open_positions": 11,
+    "last_equity": 97101.78,
+    "day_pl": -2925.0,
+    "total_pl": -5823.22,
+    "open_positions": 10,
     "positions": [
       {
         "symbol": "AAPL",
         "kind": "bull_put",
         "entry_credit": 1.53,
-        "current_value": 0.69,
-        "unrealized_pl": 210.0,
-        "dte": 5,
+        "current_value": 1.29,
+        "unrealized_pl": -75.0,
+        "dte": 0,
         "contracts": 5
       },
       {
         "symbol": "AMD",
         "kind": "bear_call",
         "entry_credit": 1.13,
-        "current_value": 1.14,
-        "unrealized_pl": -300.0,
-        "dte": 5,
+        "current_value": 5.11,
+        "unrealized_pl": -3075.0,
+        "dte": 0,
         "contracts": 5
       },
       {
         "symbol": "AMZN",
         "kind": "iron_condor",
         "entry_credit": 2.4,
-        "current_value": 1.33,
-        "unrealized_pl": -485.0,
-        "dte": 5,
+        "current_value": 2.88,
+        "unrealized_pl": -1245.0,
+        "dte": 0,
         "contracts": 5
       },
       {
         "symbol": "GOOGL",
         "kind": "iron_condor",
         "entry_credit": 2.17,
-        "current_value": 1.42,
-        "unrealized_pl": 170.0,
-        "dte": 5,
-        "contracts": 5
-      },
-      {
-        "symbol": "IWM",
-        "kind": "iron_condor",
-        "entry_credit": 1.76,
-        "current_value": 0.66,
-        "unrealized_pl": 375.0,
-        "dte": 4,
+        "current_value": 0.77,
+        "unrealized_pl": 535.0,
+        "dte": 0,
         "contracts": 5
       },
       {
         "symbol": "META",
         "kind": "iron_condor",
         "entry_credit": 2.7,
-        "current_value": 4.46,
-        "unrealized_pl": -1685.0,
-        "dte": 5,
+        "current_value": 5.28,
+        "unrealized_pl": -3655.0,
+        "dte": 0,
         "contracts": 5
       },
       {
         "symbol": "MSFT",
         "kind": "bull_put",
         "entry_credit": 1.27,
-        "current_value": 0.93,
-        "unrealized_pl": -100.0,
-        "dte": 5,
+        "current_value": 0.8,
+        "unrealized_pl": 10.0,
+        "dte": 0,
         "contracts": 5
       },
       {
         "symbol": "NVDA",
         "kind": "bull_put",
         "entry_credit": 0.85,
-        "current_value": 0.02,
-        "unrealized_pl": 360.0,
-        "dte": 5,
+        "current_value": 0.0,
+        "unrealized_pl": 395.0,
+        "dte": 0,
         "contracts": 5
       },
       {
         "symbol": "QQQ",
-        "kind": "bull_put",
-        "entry_credit": 0.98,
-        "current_value": 0.07,
-        "unrealized_pl": 78.0,
-        "dte": 4,
-        "contracts": 1
+        "kind": "iron_condor",
+        "entry_credit": 2.97,
+        "current_value": 2.97,
+        "unrealized_pl": -45.0,
+        "dte": 6,
+        "contracts": 5
       },
       {
         "symbol": "SPY",
-        "kind": "bull_put",
-        "entry_credit": 0.91,
-        "current_value": 0.12,
-        "unrealized_pl": 82.0,
-        "dte": 4,
-        "contracts": 1
+        "kind": "iron_condor",
+        "entry_credit": 1.72,
+        "current_value": 1.72,
+        "unrealized_pl": -25.0,
+        "dte": 6,
+        "contracts": 5
       },
       {
         "symbol": "TSLA",
         "kind": "bull_put",
         "entry_credit": 1.41,
-        "current_value": 2.75,
-        "unrealized_pl": -950.0,
-        "dte": 5,
+        "current_value": 0.0,
+        "unrealized_pl": 465.0,
+        "dte": 0,
         "contracts": 5
       }
     ],
@@ -4710,7 +5033,7 @@
       "QQQ": "neutral",
       "IWM": "neutral",
       "AAPL": "neutral",
-      "MSFT": "bullish",
+      "MSFT": "neutral",
       "NVDA": "neutral",
       "AMD": "neutral",
       "META": "neutral",
