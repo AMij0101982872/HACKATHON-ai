@@ -179,6 +179,12 @@
       "equity": 96909.62,
       "cash": -24255.38,
       "positions": 4
+    },
+    {
+      "ts": "2026-09-10T21:40:49.969893+00:00",
+      "equity": 97044.62,
+      "cash": -24255.38,
+      "positions": 4
     }
   ],
   "decisions": [
@@ -5342,47 +5348,113 @@
       "symbol": "TSLA",
       "action": "hold",
       "reason": "position conserv\u00e9e (P&L -185$, DTE 6)"
+    },
+    {
+      "ts": "2026-09-10T21:40:49.969838+00:00",
+      "symbol": "SPY",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -225$, DTE 5)"
+    },
+    {
+      "ts": "2026-09-10T21:40:49.969858+00:00",
+      "symbol": "QQQ",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -115$, DTE 5)"
+    },
+    {
+      "ts": "2026-09-10T21:40:49.969864+00:00",
+      "symbol": "IWM",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -195$, DTE 6)"
+    },
+    {
+      "ts": "2026-09-10T21:40:49.969868+00:00",
+      "symbol": "AAPL",
+      "action": "hold",
+      "reason": "risk_guard : buffer de cash : -26755$ apr\u00e8s collat\u00e9ral < 2% equity (1941$)"
+    },
+    {
+      "ts": "2026-09-10T21:40:49.969871+00:00",
+      "symbol": "MSFT",
+      "action": "hold",
+      "reason": "risk_guard : buffer de cash : -26755$ apr\u00e8s collat\u00e9ral < 2% equity (1941$)"
+    },
+    {
+      "ts": "2026-09-10T21:40:49.969874+00:00",
+      "symbol": "NVDA",
+      "action": "hold",
+      "reason": "risk_guard : buffer de cash : -26755$ apr\u00e8s collat\u00e9ral < 2% equity (1941$)"
+    },
+    {
+      "ts": "2026-09-10T21:40:49.969877+00:00",
+      "symbol": "AMD",
+      "action": "hold",
+      "reason": "risk_guard : buffer de cash : -26755$ apr\u00e8s collat\u00e9ral < 2% equity (1941$)"
+    },
+    {
+      "ts": "2026-09-10T21:40:49.969879+00:00",
+      "symbol": "META",
+      "action": "hold",
+      "reason": "risk_guard : buffer de cash : -26755$ apr\u00e8s collat\u00e9ral < 2% equity (1941$)"
+    },
+    {
+      "ts": "2026-09-10T21:40:49.969882+00:00",
+      "symbol": "GOOGL",
+      "action": "hold",
+      "reason": "risk_guard : buffer de cash : -26755$ apr\u00e8s collat\u00e9ral < 2% equity (1941$)"
+    },
+    {
+      "ts": "2026-09-10T21:40:49.969885+00:00",
+      "symbol": "AMZN",
+      "action": "hold",
+      "reason": "risk_guard : buffer de cash : -26755$ apr\u00e8s collat\u00e9ral < 2% equity (1941$)"
+    },
+    {
+      "ts": "2026-09-10T21:40:49.969887+00:00",
+      "symbol": "TSLA",
+      "action": "hold",
+      "reason": "position conserv\u00e9e (P&L -215$, DTE 6)"
     }
   ],
-  "generated_at": "2026-09-10T19:19:21.003925+00:00",
+  "generated_at": "2026-09-10T21:40:49.969893+00:00",
   "dry_run": false,
   "latest": {
-    "ts": "2026-09-10T19:19:21.003925+00:00",
+    "ts": "2026-09-10T21:40:49.969893+00:00",
     "dry_run": false,
-    "equity": 96909.62,
+    "equity": 97044.62,
     "cash": -24255.38,
-    "buying_power": 28637.12,
+    "buying_power": 28719.62,
     "start_of_day_equity": 97669.62,
     "high_water_mark": 100008.9,
     "last_equity": 97949.62,
-    "day_pl": -1040.0,
-    "total_pl": -3090.38,
+    "day_pl": -905.0,
+    "total_pl": -2955.38,
     "open_positions": 4,
     "positions": [
       {
         "symbol": "IWM",
         "kind": "iron_condor",
         "entry_credit": 2.24,
-        "current_value": 2.48,
-        "unrealized_pl": -190.0,
+        "current_value": 2.42,
+        "unrealized_pl": -195.0,
         "dte": 6,
         "contracts": 5
       },
       {
         "symbol": "QQQ",
         "kind": "iron_condor",
-        "entry_credit": 2.99,
-        "current_value": 2.99,
-        "unrealized_pl": -85.0,
+        "entry_credit": 3.13,
+        "current_value": 3.13,
+        "unrealized_pl": -115.0,
         "dte": 5,
         "contracts": 5
       },
       {
         "symbol": "SPY",
         "kind": "iron_condor",
-        "entry_credit": 2.05,
-        "current_value": 2.05,
-        "unrealized_pl": -260.0,
+        "entry_credit": 2.04,
+        "current_value": 2.04,
+        "unrealized_pl": -225.0,
         "dte": 5,
         "contracts": 5
       },
@@ -5390,8 +5462,8 @@
         "symbol": "TSLA",
         "kind": "bull_put",
         "entry_credit": 1.0,
-        "current_value": 1.29,
-        "unrealized_pl": -185.0,
+        "current_value": 1.34,
+        "unrealized_pl": -215.0,
         "dte": 6,
         "contracts": 5
       }
