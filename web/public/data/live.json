@@ -185,6 +185,12 @@
       "equity": 97044.62,
       "cash": -24255.38,
       "positions": 4
+    },
+    {
+      "ts": "2026-09-11T17:01:20.152161+00:00",
+      "equity": 101017.12,
+      "cash": -24255.38,
+      "positions": 4
     }
   ],
   "decisions": [
@@ -5416,71 +5422,59 @@
       "reason": "position conserv\u00e9e (P&L -215$, DTE 6)"
     }
   ],
-  "generated_at": "2026-09-10T21:40:49.969893+00:00",
+  "generated_at": "2026-09-11T17:01:20.152161+00:00",
   "dry_run": false,
   "latest": {
-    "ts": "2026-09-10T21:40:49.969893+00:00",
+    "ts": "2026-09-11T17:01:20.152161+00:00",
     "dry_run": false,
-    "equity": 97044.62,
+    "equity": 101017.12,
     "cash": -24255.38,
-    "buying_power": 28719.62,
-    "start_of_day_equity": 97669.62,
-    "high_water_mark": 100008.9,
-    "last_equity": 97949.62,
-    "day_pl": -905.0,
-    "total_pl": -2955.38,
+    "buying_power": 29713.37,
+    "start_of_day_equity": 101017.12,
+    "high_water_mark": 101017.12,
+    "last_equity": 97254.62,
+    "day_pl": 3762.5,
+    "total_pl": 1017.12,
     "open_positions": 4,
     "positions": [
       {
         "symbol": "IWM",
         "kind": "iron_condor",
         "entry_credit": 2.24,
-        "current_value": 2.42,
-        "unrealized_pl": -195.0,
-        "dte": 6,
+        "current_value": 0.0,
+        "unrealized_pl": 240.0,
+        "dte": 5,
         "contracts": 5
       },
       {
         "symbol": "QQQ",
         "kind": "iron_condor",
-        "entry_credit": 3.13,
-        "current_value": 3.13,
-        "unrealized_pl": -115.0,
-        "dte": 5,
+        "entry_credit": 0.0,
+        "current_value": 0.0,
+        "unrealized_pl": 535.0,
+        "dte": 4,
         "contracts": 5
       },
       {
         "symbol": "SPY",
         "kind": "iron_condor",
-        "entry_credit": 2.04,
-        "current_value": 2.04,
-        "unrealized_pl": -225.0,
-        "dte": 5,
+        "entry_credit": 0.0,
+        "current_value": 0.0,
+        "unrealized_pl": 455.0,
+        "dte": 4,
         "contracts": 5
       },
       {
         "symbol": "TSLA",
         "kind": "bull_put",
         "entry_credit": 1.0,
-        "current_value": 1.34,
-        "unrealized_pl": -215.0,
-        "dte": 6,
+        "current_value": 0.0,
+        "unrealized_pl": 5.0,
+        "dte": 5,
         "contracts": 5
       }
     ],
-    "regimes": {
-      "SPY": "neutral",
-      "QQQ": "neutral",
-      "IWM": "neutral",
-      "AAPL": "neutral",
-      "MSFT": "neutral",
-      "NVDA": "neutral",
-      "AMD": "neutral",
-      "META": "bullish",
-      "GOOGL": "neutral",
-      "AMZN": "neutral",
-      "TSLA": "bullish"
-    },
+    "regimes": {},
     "analyst": {
       "SPY": {
         "ok": true,
