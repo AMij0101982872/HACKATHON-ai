@@ -359,6 +359,12 @@
       "equity": 92619.58,
       "cash": -30890.42,
       "positions": 0
+    },
+    {
+      "ts": "2026-09-30T18:10:23.029300+00:00",
+      "equity": 94407.08,
+      "cash": -30890.42,
+      "positions": 0
     }
   ],
   "decisions": [
@@ -7682,21 +7688,87 @@
       "symbol": "TSLA",
       "action": "hold",
       "reason": "risk_guard : buffer de cash : -33390$ apr\u00e8s collat\u00e9ral < 2% equity (1852$)"
+    },
+    {
+      "ts": "2026-09-30T18:10:23.029235+00:00",
+      "symbol": "SPY",
+      "action": "hold",
+      "reason": "risk_guard : buffer de cash : -33390$ apr\u00e8s collat\u00e9ral < 2% equity (1888$)"
+    },
+    {
+      "ts": "2026-09-30T18:10:23.029258+00:00",
+      "symbol": "QQQ",
+      "action": "hold",
+      "reason": "risk_guard : buffer de cash : -33390$ apr\u00e8s collat\u00e9ral < 2% equity (1888$)"
+    },
+    {
+      "ts": "2026-09-30T18:10:23.029265+00:00",
+      "symbol": "IWM",
+      "action": "hold",
+      "reason": "risk_guard : buffer de cash : -33390$ apr\u00e8s collat\u00e9ral < 2% equity (1888$)"
+    },
+    {
+      "ts": "2026-09-30T18:10:23.029269+00:00",
+      "symbol": "AAPL",
+      "action": "hold",
+      "reason": "risk_guard : buffer de cash : -33390$ apr\u00e8s collat\u00e9ral < 2% equity (1888$)"
+    },
+    {
+      "ts": "2026-09-30T18:10:23.029273+00:00",
+      "symbol": "MSFT",
+      "action": "hold",
+      "reason": "risk_guard : buffer de cash : -33390$ apr\u00e8s collat\u00e9ral < 2% equity (1888$)"
+    },
+    {
+      "ts": "2026-09-30T18:10:23.029277+00:00",
+      "symbol": "NVDA",
+      "action": "hold",
+      "reason": "risk_guard : buffer de cash : -33390$ apr\u00e8s collat\u00e9ral < 2% equity (1888$)"
+    },
+    {
+      "ts": "2026-09-30T18:10:23.029280+00:00",
+      "symbol": "AMD",
+      "action": "hold",
+      "reason": "risk_guard : buffer de cash : -33390$ apr\u00e8s collat\u00e9ral < 2% equity (1888$)"
+    },
+    {
+      "ts": "2026-09-30T18:10:23.029284+00:00",
+      "symbol": "META",
+      "action": "hold",
+      "reason": "risk_guard : buffer de cash : -33390$ apr\u00e8s collat\u00e9ral < 2% equity (1888$)"
+    },
+    {
+      "ts": "2026-09-30T18:10:23.029287+00:00",
+      "symbol": "GOOGL",
+      "action": "hold",
+      "reason": "risk_guard : buffer de cash : -33390$ apr\u00e8s collat\u00e9ral < 2% equity (1888$)"
+    },
+    {
+      "ts": "2026-09-30T18:10:23.029291+00:00",
+      "symbol": "AMZN",
+      "action": "hold",
+      "reason": "risk_guard : buffer de cash : -33390$ apr\u00e8s collat\u00e9ral < 2% equity (1888$)"
+    },
+    {
+      "ts": "2026-09-30T18:10:23.029294+00:00",
+      "symbol": "TSLA",
+      "action": "hold",
+      "reason": "risk_guard : buffer de cash : -33390$ apr\u00e8s collat\u00e9ral < 2% equity (1888$)"
     }
   ],
-  "generated_at": "2026-09-29T22:33:07.146193+00:00",
+  "generated_at": "2026-09-30T18:10:23.029300+00:00",
   "dry_run": false,
   "latest": {
-    "ts": "2026-09-29T22:33:07.146193+00:00",
+    "ts": "2026-09-30T18:10:23.029300+00:00",
     "dry_run": false,
-    "equity": 92619.58,
+    "equity": 94407.08,
     "cash": -30890.42,
-    "buying_power": 30864.58,
-    "start_of_day_equity": 92637.08,
+    "buying_power": 31758.33,
+    "start_of_day_equity": 94407.08,
     "high_water_mark": 101829.62,
-    "last_equity": 92184.58,
-    "day_pl": 435.0,
-    "total_pl": -7380.42,
+    "last_equity": 92444.58,
+    "day_pl": 1962.5,
+    "total_pl": -5592.92,
     "open_positions": 0,
     "positions": [],
     "regimes": {
